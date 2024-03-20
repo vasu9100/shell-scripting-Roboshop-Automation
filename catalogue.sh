@@ -34,10 +34,10 @@ fi
 echo
 echo "----------------------------------------------------------------------------------------"
 echo -e "DISABLING NODE-JS AND ENABLING LATEST VERSION"
-dnf module disable nodejs -y
+dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "DISABLED NODE-JS"
 echo
-dnf module enable nodejs:18 -y
+dnf module enable nodejs:18 -y &>>$LOG_FILE
 VALIDATE $? "ENABLED NODE-JS"
 echo "-----------------------------------------------------------------------------------------"
 echo -e "${YELLOW}$0 is checking Node-js whether installed or not in the system ${RESET}"
@@ -47,18 +47,18 @@ then
     echo -e "${GREEN}NODE JS ALREADY INSTALLED ${GREEN}"
 else
     echo -e "${GREEN}NODE JS 18 INSTALLING"
-    dnf install nodejs:18 -y
+    dnf install nodejs:18 -y &>>$LOG_FILE
     VALIDATE $? "NODEJS-18 INSTALLATION"
 fi
 echo "-------------------------------------------------------------------------------------------"
 echo
-id roboshop
+id roboshop &>>$LOG_FILE
 if [ $? -eq 0 ]
 then
     echo -e "${GREEN}ROBO-SHOP USER ALREADY AVAILABLE So SKIIPING USER CREATION ${GREEN}"
 else
     echo -e "${GREEN}ROBO-SHOP USER CREATION STARTED"
-    useradd roboshop
+    useradd roboshop &>>$LOG_FILE
     VALIDATE $? "ROBO-SHOP USER CREATION PART"
 fi
 echo "--------------------------------------------------------------------------------------------"
@@ -68,19 +68,19 @@ then
     echo -e "{$RED}/app FOLDER ALREADY EXISTED SO SKIPPING FOLDER CREATION $RESET"
 else
     echo -e "${YELLOW}/app FOLDER CREATION STARTED $RESET"
-    mkdir -p /app
+    mkdir -p /app &>>$LOG_FILE
     VALIDATE $? "APP FOLDER CREATION"
 fi
 echo "-------------------------------------------------------------------------------------------"
 echo
 echo -e "${GREEN}DOWNLOADING THE APPLICATION CODE FROM INTERNET ${RESET}"
-curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "APP CODE DOWALOADING"
 echo
 echo -e "${GREEN}UNZIPPING THE DOWNLOAD APP CODE"
 cd /app
 pwd
-unzip -o /tmp/catalogue.zip
+unzip -o /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo "${GREEN}NPM INSTALLATION STARTED $RESET"
@@ -113,7 +113,7 @@ fi
 echo "---------------------------------------------------------------------------"
 echo
 echo "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
-mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js
+mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "DATA UPLOADING"
 echo "------------------------------ THE-END--------------------------------------"
 echo "SCRIPT END TIME: $0-$DATE"
