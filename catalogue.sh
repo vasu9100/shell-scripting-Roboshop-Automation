@@ -68,7 +68,7 @@ VALIDATE $? "UNZIPPING CODE"
 npm install &>>$LOGFILE
 VALIDATE "NPM INSTALLATION" &>>$LOGFILE
 
-cp /home/centos/shell/catalogue.service /etc/systemd/system/catalogue.service
+cp /home/centos//shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "COPYING  Catalogue.serive"
 
 systemctl daemon-reload
@@ -80,7 +80,7 @@ VALIDATE $? "ENABALED CATALOGUE SERVICE"
 systemctl start catalogue
 VALIDATE $? "STARTED OF CATALOGUE"
 
-cp /home/centos/shell/mongo.repo /etc/yum.repos.d/mongo.repo
+cp /home/centos//shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo
 VALIDATE $? "mongo.repo COPYING"
 
 mongo --version &>>$LOGFILE
