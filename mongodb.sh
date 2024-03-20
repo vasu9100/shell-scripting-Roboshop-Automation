@@ -58,11 +58,11 @@ VALIDATE $? "MONGO-DB STARTED"
 echo "---------------------------------------------------------------------------------"
 echo
 echo -e "${YELLOW} Update listen address from 127.0.0.1 to 0.0.0.0 ${RESET}"
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf &>>$LOG_FILE
-VALIDATE $? "Updated listen address from 127.0.0.1 to 0.0.0.0"
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+VALIDATE $? "Updated listen address"
 echo "---------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW} MONGO-DB RESTARTED"
+echo -e "${YELLOW}MONGO-DB RESTARTED ${RESET}"
 netstat -tuln| grep '^tcp'| awk '{print $1, $4}'
 VALIDATE "LISTENER UPDATION"
 echo "SCRIPT EXECUTION DONE TIME:: $DATE"
