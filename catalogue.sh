@@ -2,7 +2,7 @@
 # Script Name: install_mongodb.sh
 # Purpose: This script installs MongoDB for the Roboshop application.
 # Author: Gonepudi Srinivas
-# Date: March 18, 2024
+# Date: March 20, 2024
 # Version: 1.0
 
 # Define variables
@@ -114,7 +114,7 @@ else
 fi
 echo "---------------------------------------------------------------------------"
 echo
-echo "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
+echo -e "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
 mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "DATA UPLOADING"
 echo "------------------------------ THE-END--------------------------------------"
