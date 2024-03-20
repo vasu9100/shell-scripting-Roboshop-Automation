@@ -89,6 +89,8 @@ echo
 systemctl daemon-reload
 VALIDATE $? "DAEMON RELOADED"
 echo
+cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service
+VALIDATE $? "Catalogue.service Copying"
 systemctl enable catalogue
 VALIDATE $? "ENABLED CATALOGUE SERVICE"
 echo
