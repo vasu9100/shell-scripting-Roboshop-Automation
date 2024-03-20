@@ -68,7 +68,7 @@ fi
 echo "---------------------------------------------------------------------------------------------"
 echo
 echo -e "${RED}REMOVING OLD HTML CONTENT${RESET}"
-rm -f /usr/share/nginx/html/* &>>$LOG_FILE
+rm -rf /usr/share/nginx/html/* &>>$LOG_FILE
 VALIDATE $? "OLD HTML DATA REMOVED"
 echo
 echo -e "${GREEN}Download the frontend content${RESET}"
