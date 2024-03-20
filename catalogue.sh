@@ -1,97 +1,121 @@
 #!/bin/bash
+# Script Name: install_mongodb.sh
+# Purpose: This script installs catalogue for the Roboshop application.
+# Author: Gonepudi Srinivas
+# Date: March 20, 2024
+# Version: 1.0
 
-ID=$(id -u)
-TIME_STAMP=$(date +%F-%H-%M-%S)
-LOGFILE="/tmp/$0-$TIME_STAMP.log"
-MONGO_HOST="mongodb.gonepudirobot.online"
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
+# Define variables
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RESET='\033[0m'
+DATE=$(date +'%F-%H-%M-%S')
+USER_ID=$(id -u)
+LOG_FILE="/tmp/$0-$DATE.log"
 
-echo "Script started TIME: $TIME_STAMP"
-
-VALIDATE(){
-    if [ $1 -ne 0 ]
-    then
-        echo -e "$2.. $R FAILED $N"
-        exit 1
+# Function to validate commands
+VALIDATE() {
+    if [ $1 -eq 0 ]; then
+        echo -e "${YELLOW}$2... ${GREEN}SUCCESS${RESET}"
     else
-        echo -e  "$2...$N $G SUCESS $N" 
+        echo -e "${YELLOW}$2... ${RED}FAILED${RESET}"
+        exit 1
     fi
 }
 
-if [ $ID -eq 0 ]
-then
-    echo -e " $G SUCCESS:: YOUR ARE ROOT USER: $N "
-else
-    echo -e " $R ERROR:: YOUR ARE NOT ROOT USER: $N "
-    exit 1 
+# Check if the user is root
+if [ "$USER_ID" -eq 0 ]; then
+    echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}"
+else 
+    echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}"
+    exit 1
 fi
-
-dnf module disable nodejs -y &>>$LOGFILE
-VALIDATE $? "DISABLE CURRENT NODEJS"
-dnf module enable nodejs:18 -y &>>$LOGFILE
-VALIDATE $? "ENABLED NODE-JS:18"
-
-yum list installed | grep nodejs &>>$LOGFILE
-
+echo
+echo "----------------------------------------------------------------------------------------"
+echo -e "${GREEN}DISABLING NODE-JS AND ENABLING LATEST VERSION ${RESET}"
+dnf module disable nodejs -y &>>$LOG_FILE
+VALIDATE $? "DISABLED NODE-JS"
+echo
+dnf module enable nodejs:18 -y &>>$LOG_FILE
+VALIDATE $? "ENABLED NODE-JS"
+echo "-----------------------------------------------------------------------------------------"
+echo -e "${YELLOW}$0 is checking Node-js whether installed or not in the system ${RESET}"
+which node
 if [ $? -eq 0 ]
 then
-    echo -e " $Y NODE-JS ALREADY INSTALLED SO SKIIPING INSTALLATION $N "
+    echo -e "${GREEN}NODE JS ALREADY INSTALLED ${GREEN}"
 else
-    dnf install nodejs -y &>>$LOGFILE
-    VALIDATE $? "NODEJS:18 INSTALLING"
+    echo -e "${GREEN}NODE JS 18 INSTALLING"
+    dnf install nodejs -y &>>$LOG_FILE
+    VALIDATE $? "NODEJS-18 INSTALLATION"
 fi
-
-id roboshop
-
+echo "-------------------------------------------------------------------------------------------"
+echo
+id roboshop &>>$LOG_FILE
 if [ $? -eq 0 ]
 then
-    echo -e " $R ROOSHOP USER ALREADY EXITSED $N ..$Y SKIPPING CREATION $N "
+    echo -e "${GREEN}ROBO-SHOP USER ALREADY AVAILABLE So SKIIPING USER CREATION ${GREEN}"
 else
-    useradd roboshop &>>$LOGFILE
-    VALIDATE $? "ROBOSHOP USER CREATION"
+    echo -e "${GREEN}ROBO-SHOP USER CREATION STARTED"
+    useradd roboshop &>>$LOG_FILE
+    VALIDATE $? "ROBO-SHOP USER CREATION PART"
 fi
-
-mkdir -p /app
-VALIDATE $? "/app DIRECTORY CREATION"
-
-curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOGFILE
-VALIDATE $? "DOWNLOADING CATALOGE.ZIP"
-
-cd /app 
-
-unzip -o /tmp/catalogue.zip &>>$LOGFILE
-VALIDATE $? "UNZIPPING CODE"
-
-npm install &>>$LOGFILE
-VALIDATE "NPM INSTALLATION" &>>$LOGFILE
-
-cp /home/centos//shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service
-VALIDATE $? "COPYING  Catalogue.serive"
-
+echo "--------------------------------------------------------------------------------------------"
+echo
+if [ -d /app ]
+then
+    echo -e "{$RED}/app FOLDER ALREADY EXISTED SO SKIPPING FOLDER CREATION $RESET"
+else
+    echo -e "${YELLOW}/app FOLDER CREATION STARTED $RESET"
+    mkdir -p /app &>>$LOG_FILE
+    VALIDATE $? "APP FOLDER CREATION"
+fi
+echo "-------------------------------------------------------------------------------------------"
+echo
+echo -e "${GREEN}DOWNLOADING THE APPLICATION CODE FROM INTERNET ${RESET}"
+curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOG_FILE
+VALIDATE $? "APP CODE DOWALOADING"
+echo
+echo -e "${GREEN}UNZIPPING THE DOWNLOAD APP CODE"
+cd /app
+pwd
+unzip -o /tmp/catalogue.zip &>>$LOG_FILE
+VALIDATE $? "UNZIPPED CODE INTO /APP"
+echo
+echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
+echo "-----------------------------------------------------------------------------------------"
+echo
 systemctl daemon-reload
-VALIDATE $? "REALOD DAEMON"
-
+VALIDATE $? "DAEMON RELOADED"
+echo
+cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service
+VALIDATE $? "Catalogue.service Copying"
 systemctl enable catalogue
-VALIDATE $? "ENABALED CATALOGUE SERVICE"
-
+VALIDATE $? "ENABLED CATALOGUE SERVICE"
+echo
 systemctl start catalogue
-VALIDATE $? "STARTED OF CATALOGUE"
-
-cp /home/centos//shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo
-VALIDATE $? "mongo.repo COPYING"
-
-mongo --version &>>$LOGFILE
-if [ $? -eq 0 ]
-then
-    echo -e "$R MONGO SHELL ALREADY EXITSED $N ..$Y SKIPPING $N "
+VALIDATE $? "ENABLED CATALOGUE SERVICE"
+echo "-----------------------------------------------------------------------------------------------"
+echo
+echo -e "${YELLOW}SETTING UP MONGO REPOSITORY FILE${RESET}"
+cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
+VALIDATE $? "MONGO-REPO FILE COPYING"
+echo "-------------------------------------------------------------------------"
+echo
+echo -e "${YELLOW}VERIFYING WHETHER MONGO-DB-ORG-SHELL IS ALREADY INSTALLED ON THE LINUX SYSTEM OR NOT${RESET}"
+if which mongod &>>$LOG_FILE; then
+    echo -e "${YELLOW}MONGO-DB IS ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}"
 else
-    dnf install mongodb-org-shell -y
-    VALIDATE $? "MONGO SHELL INSTALLATION"
+    echo -e "${YELLOW}INSTALLING MONGO-DB${RESET}"
+    echo
+    dnf install mongodb-org-shell -y &>>$LOG_FILE
+    VALIDATE $? "MONGO-DB-ORG-SHELL INSTALLATION"
 fi
-mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOGFILE
-VALIDATE $? "LOADING SCHEMA"
-
-echo "SCRIPT EXCEUTION DONE AT $TIME_STAMP THANK YOU!"
+echo "---------------------------------------------------------------------------"
+echo
+echo -e "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
+mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
+VALIDATE $? "DATA UPLOADING"
+echo "------------------------------ THE-END--------------------------------------"
+echo "SCRIPT END TIME: $0-$DATE"
