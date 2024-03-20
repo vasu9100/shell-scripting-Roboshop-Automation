@@ -16,59 +16,54 @@ LOG_FILE="/tmp/$0-$DATE.log"
 VALIDATE(){
     if [ $1 -eq 0 ]
     then
-        echo "${YELLOW}$2....${GREEN}SUCESS ${RESET}"
+        echo -e "${YELLOW}$2....${GREEN}SUCCESS ${RESET}"
     else
-        echo "${YELLOW}$2....${RED}FAILED ${RESET}"
+        echo -e "${YELLOW}$2....${RED}FAILED ${RESET}"
         exit 1
     fi
 }
 
 if [ "$USER_ID" -eq 0 ]
 then
-    echo -e "${GREEN} SUCCESS:: YOUR ARE A ROOT USER SCRIPT CAN EXECUTION WILL START ${RESET}"
+    echo -e "${GREEN}SUCCESS:: YOU ARE A ROOT USER. SCRIPT EXECUTION WILL START.${RESET}"
 else 
-    echo -e "${RED} ERROR:: YOUR NOT A ROOT USER PLEASE SWITCH TO ROOT USER ${RED}"
+    echo -e "${RED}ERROR:: YOU ARE NOT A ROOT USER. PLEASE SWITCH TO ROOT USER.${RESET}"
     exit 1
 fi
-echo "SCRIPT EXCEUTION STAT TIME :: $DATE"
-echo -e "${YELLOW} MONGO-DB INSTALLATION SCRIPT STARTED TIME:: $DATE ${RESET}"
+echo "SCRIPT EXECUTION START TIME: $DATE"
+echo -e "${YELLOW}MONGO-DB INSTALLATION SCRIPT STARTED TIME: $DATE ${RESET}"
 echo "-------------------------------------------------------------------------"
-echo -e "{$YELLOW}SETTING-UP MONGO REPOSIOTORY FILE ${RESET}"
+echo -e "${YELLOW}SETTING UP MONGO REPOSITORY FILE ${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? "MONGO-REPO FILE COPYING"
 echo "-------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW}SCRIPT IS VERFYING MONGO-DB ALREADY INSTALLED IN LINUX SYSTEM (OR) NOT ? ${RESET}"
+echo -e "${YELLOW}SCRIPT IS VERIFYING WHETHER MONGO-DB IS ALREADY INSTALLED ON THE LINUX SYSTEM OR NOT${RESET}"
 if which mongod &>>$LOG_FILE
 then
-    echo -e "${YEWLLO}MONGO-DB INSTALLED ALREADY SO ${GREEN} SKIPPING ${RESET} INSTALLATION PART"
+    echo -e "${YELLOW}MONGO-DB IS ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}"
 else
-    echo -e "${YELLOW} INSTALLING MONGO-DB ${RESET}"
+    echo -e "${YELLOW}INSTALLING MONGO-DB ${RESET}"
     echo
     dnf install mongodb-org -y &>>$LOG_FILE
     VALIDATE $? "MONGO-DB INSTALLATION"
 fi
 echo "---------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW}START AND ENABLE MONGO-DB ${RESET}"
+echo -e "${YELLOW}STARTING AND ENABLING MONGO-DB ${RESET}"
 systemctl enable mongod &>>$LOG_FILE
 VALIDATE $? "MONGO-DB ENABLED"
 systemctl start mongod &>>$LOG_FILE
 VALIDATE $? "MONGO-DB STARTED"
 echo "---------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW} Update listen address from 127.0.0.1 to 0.0.0.0 ${RESET}"
+echo -e "${YELLOW}UPDATING LISTEN ADDRESS FROM 127.0.0.1 TO 0.0.0.0 ${RESET}"
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
-VALIDATE $? "Updated listen address"
+VALIDATE $? "UPDATED LISTEN ADDRESS"
 echo "---------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW}MONGO-DB RESTARTED ${RESET}"
-netstat -tuln| grep '^tcp'| awk '{print $1, $4}'
-VALIDATE "LISTENER UPDATION"
-echo "SCRIPT EXECUTION DONE TIME:: $DATE"
-echo "----------------${RED}THE-END ${RESET}--------------------------"
-
-
-
-
-
+echo -e "${YELLOW}RESTARTING MONGO-DB ${RESET}"
+systemctl restart mongod &>>$LOG_FILE
+VALIDATE $? "MONGO-DB RESTARTED"
+echo "SCRIPT EXECUTION END TIME: $DATE"
+echo "----------------${RED}THE END ${RESET}--------------------------"
