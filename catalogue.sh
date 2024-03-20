@@ -33,7 +33,7 @@ else
 fi
 echo
 echo "----------------------------------------------------------------------------------------"
-echo -e "DISABLING NODE-JS AND ENABLING LATEST VERSION"
+echo -e "${GREEN}DISABLING NODE-JS AND ENABLING LATEST VERSION ${RESET}"
 dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "DISABLED NODE-JS"
 echo
@@ -47,7 +47,7 @@ then
     echo -e "${GREEN}NODE JS ALREADY INSTALLED ${GREEN}"
 else
     echo -e "${GREEN}NODE JS 18 INSTALLING"
-    dnf install nodejs:18 -y &>>$LOG_FILE
+    dnf install nodejs -y &>>$LOG_FILE
     VALIDATE $? "NODEJS-18 INSTALLATION"
 fi
 echo "-------------------------------------------------------------------------------------------"
