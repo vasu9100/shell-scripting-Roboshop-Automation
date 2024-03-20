@@ -36,7 +36,7 @@ fi
 echo
 echo "----------------------------------------------------------------------------------------"
 echo -e "INSTALLING REDIS"
-if [ -f /etc/yum.repos.d/remi*.repo ]
+if [ ls "/etc/yum.repos.d/remi*.repo" -eq 0 ]
 then
   echo -e "${RED}REDIS REPO ALREADY INSTALLED SO SKIPPING"
 else
