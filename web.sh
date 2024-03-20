@@ -57,13 +57,12 @@ echo
 echo -e "TAKING BACKUP OF HTML FOLDER"
 if [ -d /usr/share/nginx/html ]
 then
-  echo -e "CREATE BACKUP FOLDER FRIST"
+  echo -e "CREATE BACKUP FOLDER and Taking BAckUp"
   mkdir -p /usr/share/nginx/html &>>$LOG_FILE
-  VALIDATE $? "BACKUP FOLDER CREATING"
-else
-  echo -e "TAKING BACKUP OF HTML FOLDER"
   cp -r /usr/share/nginx/html $BACKUP 
-  VALIDATE $? "BACKUP DONE"
+  VALIDATE $? "BACKUP FOLDER CREATING BACKUP DONE"
+else
+  echo -e "${RED}BACKUP"
 fi
 echo "---------------------------------------------------------------------------------------------"
 echo
