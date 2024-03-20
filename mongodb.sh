@@ -65,5 +65,7 @@ echo
 echo -e "${YELLOW}RESTARTING MONGO-DB ${RESET}"
 systemctl restart mongod &>>$LOG_FILE
 VALIDATE $? "MONGO-DB RESTARTED"
+netstat -tuln| grep '^tcp'| awk '{print $1, $4}'
+VALIDATE $? "LISTENER UPDATION"
 echo "SCRIPT EXECUTION END TIME: $DATE"
-echo "----------------${RED}THE END ${RESET}--------------------------"
+echo -e "----------------${RED}THE END ${RESET}--------------------------"
