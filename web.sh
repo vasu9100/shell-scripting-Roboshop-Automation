@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script Name: install_mongodb.sh
-# Purpose: This script installs MongoDB for the Roboshop application.
+# Purpose: This script installs NGINX for the Roboshop application.
 # Author: Gonepudi Srinivas
 # Date: March 20, 2024
 # Version: 1.0
