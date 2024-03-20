@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script Name: install_mongodb.sh
-# Purpose: This script installs MongoDB for the Roboshop application.
+# Purpose: This script installs catalogue for the Roboshop application.
 # Author: Gonepudi Srinivas
 # Date: March 20, 2024
 # Version: 1.0
@@ -119,10 +119,3 @@ mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "DATA UPLOADING"
 echo "------------------------------ THE-END--------------------------------------"
 echo "SCRIPT END TIME: $0-$DATE"
-
-
-
-
-
-
-
