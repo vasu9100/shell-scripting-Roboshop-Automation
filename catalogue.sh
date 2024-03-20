@@ -91,7 +91,7 @@ else
     dnf install mongodb-org-shell -y
     VALIDATE $? "MONGO SHELL INSTALLATION"
 fi
-mongo --host $MONGO_HOST </app/schema/catalogue.js &>>$LOGFILE
+mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOGFILE
 VALIDATE $? "LOADING SCHEMA"
 
 echo "SCRIPT EXCEUTION DONE AT $TIME_STAMP THANK YOU!"
