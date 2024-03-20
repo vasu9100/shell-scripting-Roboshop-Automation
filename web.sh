@@ -35,22 +35,22 @@ fi
 echo
 echo "----------------------------------------------------------------------------------------"
 echo
-echo -e "${GREEN} INSTALLING NGINX"
-which nginx
+echo -e "${GREEN}INSTALLING NGINX"
+which nginx &>>$LOG_FILE
 if [ $? -eq 0 ]
 then
   echo -e "NGNIX IS ALREDAY INSTALLED SO SKIPPING THIS PART"
 else
   echo -e "NGINX INSTALLATION PART STARTED"
-  dnf install nginx -y 
+  dnf install nginx -y &>>$LOG_FILE
   VALIDATE $? "NGINX INSTALLATION PART"
 fi
 echo "-------------------------------------------------------------------------------------------"  
 echo
-systemctl enable nginx
+systemctl enable nginx &>>$LOG_FILE
 VALIDATE $? "ENABLED NGINX SERVICE"
 echo
-systemctl start nginx
+systemctl start nginx &>>$LOG_FILE
 VALIDATE $? "STARTED NGINX SERVICE"
 echo "-----------------------------------------------------------------------------------------------"
 echo
@@ -58,31 +58,32 @@ echo -e "TAKING BACKUP OF HTML FOLDER"
 if [ -d /usr/share/nginx/html ]
 then
   echo -e "CREATE BACKUP FOLDER FRIST"
-  mkdir -p /usr/share/nginx/html
+  mkdir -p /usr/share/nginx/html &>>$LOG_FILE
+  VALIDATE $? "BACKUP FOLDER CREATING"
 else
   echo -e "TAKING BACKUP OF HTML FOLDER"
-  cp -r /usr/share/nginx/html $BACKUP
+  cp -r /usr/share/nginx/html $BACKUP 
   VALIDATE $? "BACKUP DONE"
 fi
 echo "---------------------------------------------------------------------------------------------"
 echo
 echo -e "${RED}REMOVING OLD HTML CONTENT${RESET}"
-rm -f /usr/share/nginx/html/*
+rm -f /usr/share/nginx/html/* &>>$LOG_FILE
 VALIDATE $? "OLD HTML DATA REMOVED"
 echo
 echo -e "${GREEN}Download the frontend content${RESET}"
-curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip
+curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>>$LOG_FILE
 VALIDATE $? "DOWNLOADING FRONT-END CODE"
 echo
 echo -e "${GREEN}EXTRACTING THE CODE ${RESET}"
 cd /usr/share/nginx/html
 pwd
-unzip -o /tmp/web.zip
+unzip -o /tmp/web.zip &>>$LOG_FILE
 VALIDATE $? "EXTRACTING"
 echo "---------------------------------------------------------------------------------------------"
 echo
 echo "ROBO-SHOP CONFIG FILE STARTED COPYING"
-cp /home/centos/shell-scripting-Roboshop-Automation/roboshop.conf /etc/nginx/default.d/roboshop.conf
+cp /home/centos/shell-scripting-Roboshop-Automation/roboshop.conf /etc/nginx/default.d/roboshop.conf &>>$LOG_FILE
 VALIDATE $? "ROBO-SHOP CONFIG FILE COPIED"
 echo
 systemctl restart nginx
