@@ -83,7 +83,7 @@ pwd
 unzip -o /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
-echo "${GREEN}NPM INSTALLATION STARTED $RESET"
+echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
 echo "-----------------------------------------------------------------------------------------"
 echo
 systemctl daemon-reload
