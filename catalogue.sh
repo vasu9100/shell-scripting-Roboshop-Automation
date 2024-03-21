@@ -84,6 +84,8 @@ unzip -o /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
+npm install
+VALIDATE $? "NPM INSTALLATION"
 echo "-----------------------------------------------------------------------------------------"
 echo
 systemctl daemon-reload
