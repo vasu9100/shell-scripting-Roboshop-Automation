@@ -32,24 +32,24 @@ else
     exit 1
 fi
 echo "----------------------------------------------------------------------------------"
-dnf module disable mysql -y
+dnf module disable mysql -y &>>$LOG_FILE
 VALIDATE $? "DISABLING MYSQL DAFUALT VERSION"
 echo
 echo -e "${GREEN}Setup the MySQL5.7 repo file${RESET}"
-cp /home/centos/shell-scripting-Roboshop-Automation/mysql.repo  /etc/yum.repos.d/mysql.repo
+cp /home/centos/shell-scripting-Roboshop-Automation/mysql.repo  /etc/yum.repos.d/mysql.repo &>>$LOG_FILE
 VALIDATE $? "MYSQL REPO SETUP"
 echo "--------------------------------------------------------------------------------------"
 echo
-yum list installed | grep mysql
+yum list installed | grep mysql &>>$LOG_FILE
 
 if [ $? -eq 0 ]
 then
     echo -e "${YELLOW}MYSQL ALREADY INSTALLED SO SKIIPING INSTALLATION"
 else
-    dnf install mysql -y
+    dnf install mysql -y &>>$LOG_FILE
     VALIDATE $? "MYSQL INSTALLATION"
 fi
-dnf install mysql-community-server -y
+dnf install mysql-community-server -y &>>$LOG_FILE
 VALIDATE $? "COMMUNITY SERVER INSTALLED"
 echo "--------------------------------------------------------------------------------------"
 echo
