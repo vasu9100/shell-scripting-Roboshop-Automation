@@ -34,10 +34,9 @@ fi
 
 echo
 echo "----------------------------------------------------------------------------------------"
-echo -e "INSTALLING REDIS"
 if rpm -q remi-release &>>$LOG_FILE
 then
-  echo -e "${RED}REDIS REPO ALREADY INSTALLED SO SKIPPING"
+  echo -e "${YELLOW}REDIS REPO ALREADY INSTALLED SO SKIPPING"
 else
   dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y &>>$LOG_FILE
   VALIDATE $? "REDIS RPM INSTALLATION"
@@ -46,7 +45,7 @@ echo "--------------------------------------------------------------------------
 echo
 if yum list installed | grep redis 
 then
-    echo -e "${YELLOW}REDIS ALREADY INSTALLED SO ${RED}SKIPPING ${RESET} INSTALLATION PART"   
+    echo -e "${YELLOW}REDIS ALREADY INSTALLED SO SKIPPING INSTALLATION PART"   
 else
     dnf install redis -y &>>$LOG_FILE
     VALIDATE $? "INSTALLATION REDIS"
