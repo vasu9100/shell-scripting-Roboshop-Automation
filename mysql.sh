@@ -49,6 +49,8 @@ else
     dnf install mysql -y
     VALIDATE $? "MYSQL INSTALLATION"
 fi
+dnf install mysql-community-server -y
+VALIDATE $? "COMMUNITY SERVER INSTALLED"
 echo "--------------------------------------------------------------------------------------"
 echo
 systemctl enable mysqld
