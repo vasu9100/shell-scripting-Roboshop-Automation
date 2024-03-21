@@ -13,7 +13,6 @@ RESET='\033[0m'
 DATE=$(date +'%F-%H-%M-%S')
 USER_ID=$(id -u)
 LOG_FILE="/tmp/$0-$DATE.log"
-BACKUP="/tmp/HTML-BACKUP-$DATE"
 
 # Function to validate commands
 VALIDATE() {
@@ -36,11 +35,11 @@ fi
 echo
 echo "----------------------------------------------------------------------------------------"
 echo -e "INSTALLING REDIS"
-if rpm -q remi-release
+if rpm -q remi-release &>>$LOG_FILE
 then
   echo -e "${RED}REDIS REPO ALREADY INSTALLED SO SKIPPING"
 else
-  dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
+  dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y &>>$LOG_FILE
   VALIDATE $? "REDIS RPM INSTALLATION"
 fi
 echo "----------------------------------------------------------------------------------------"
@@ -50,19 +49,22 @@ if systemctl status redis
 then
     echo -e "REDIS ALREADY INSTALLED SO SKIPPING INSTALLATION PART"   
 else
-    dnf install redis -y
+    dnf install redis -y &>>$LOG_FILE
     VALIDATE $? "INSTALLATION REDIS"
 fi    
 echo "-----------------------------------------------------------------------------------------"
 echo
 echo -e "${YELLOW}Updating listen address from 127.0.0.1 to 0.0.0.0 in /etc/redis.conf"
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis/redis.conf
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf
 VALIDATE $? "UPDATION LISTEN ADRESS"
 echo
+netstat -tuln | awk '{print $1, $4}' | grep -i '^tcp'
+
 systemctl enable redis
 VALIDATE $? "REDIS ENABLED"
 systemctl start redis
 VALIDATE $? "REDIS STARTED"
 echo
+netstat -tuln | awk '{print $1, $4}' | grep -i '^tcp'
 echo "--------------------------------THE-END--------------------------------------------------------"
 echo "${YELLOW}SCRIPT EXCEUTION DONE TIME : $DATE"
