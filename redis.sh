@@ -45,3 +45,24 @@ else
 fi
 echo "----------------------------------------------------------------------------------------"
 echo
+echo -e "${YELLOW}INSTALLING REDIS NOW"
+if systemctl status redis 
+then
+    echo -e "REDIS ALREADY INSTALLED SO SKIPPING INSTALLATION PART"   
+else
+    dnf install redis -y
+    VALIDATE $? "INSTALLATION REDIS"
+fi    
+echo "-----------------------------------------------------------------------------------------"
+echo
+echo -e "${YELLOW}Updating listen address from 127.0.0.1 to 0.0.0.0 in /etc/redis.conf"
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis/redis.conf
+VALIDATE $? "UPDATION LISTEN ADRESS"
+echo
+systemctl enable redis
+VALIDATE $? "REDIS ENABLED"
+systemctl start redis
+VALIDATE $? "REDIS STARTED"
+echo
+echo "--------------------------------THE-END--------------------------------------------------------"
+echo "${YELLOW}SCRIPT EXCEUTION DONE TIME : $DATE"
