@@ -44,10 +44,9 @@ else
 fi
 echo "----------------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW}INSTALLING REDIS NOW"
 if yum list installed | grep redis 
 then
-    echo -e "REDIS ALREADY INSTALLED SO SKIPPING INSTALLATION PART"   
+    echo -e "${YELLOW}REDIS ALREADY INSTALLED SO ${RED}SKIPPING ${RESET} INSTALLATION PART"   
 else
     dnf install redis -y &>>$LOG_FILE
     VALIDATE $? "INSTALLATION REDIS"
