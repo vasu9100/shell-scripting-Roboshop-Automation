@@ -95,7 +95,7 @@ systemctl enable catalogue
 VALIDATE $? "ENABLED CATALOGUE SERVICE"
 echo
 systemctl start catalogue
-VALIDATE $? "ENABLED CATALOGUE SERVICE"
+VALIDATE $? "STARTED CATALOGUE SERVICE"
 echo "-----------------------------------------------------------------------------------------------"
 echo
 echo -e "${YELLOW}SETTING UP MONGO REPOSITORY FILE${RESET}"
@@ -104,7 +104,7 @@ VALIDATE $? "MONGO-REPO FILE COPYING"
 echo "-------------------------------------------------------------------------"
 echo
 echo -e "${YELLOW}VERIFYING WHETHER MONGO-DB-ORG-SHELL IS ALREADY INSTALLED ON THE LINUX SYSTEM OR NOT${RESET}"
-if which mongod &>>$LOG_FILE; then
+if mongod --version &>>$LOG_FILE; then
     echo -e "${YELLOW}MONGO-DB IS ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}"
 else
     echo -e "${YELLOW}INSTALLING MONGO-DB${RESET}"
@@ -117,5 +117,8 @@ echo
 echo -e "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
 mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "DATA UPLOADING"
+systemctl restart catalogue
+VALIDATE $? "CATALOGUE RESTARTED"
+
 echo "------------------------------ THE-END--------------------------------------"
 echo "SCRIPT END TIME: $0-$DATE"

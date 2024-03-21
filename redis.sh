@@ -43,3 +43,5 @@ else
   dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
   VALIDATE $? "REDIS RPM INSTALLATION"
 fi
+echo "----------------------------------------------------------------------------------------"
+echo
