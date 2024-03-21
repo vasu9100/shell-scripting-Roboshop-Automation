@@ -45,7 +45,7 @@ fi
 echo "----------------------------------------------------------------------------------------"
 echo
 echo -e "${YELLOW}INSTALLING REDIS NOW"
-if systemctl status redis 
+if yum list installed | grep redis 
 then
     echo -e "REDIS ALREADY INSTALLED SO SKIPPING INSTALLATION PART"   
 else
@@ -58,8 +58,6 @@ echo -e "${YELLOW}Updating listen address from 127.0.0.1 to 0.0.0.0 in /etc/redi
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf
 VALIDATE $? "UPDATION LISTEN ADRESS"
 echo
-netstat -tuln | awk '{print $1, $4}' | grep -i '^tcp'
-
 systemctl enable redis
 VALIDATE $? "REDIS ENABLED"
 systemctl start redis
@@ -67,4 +65,4 @@ VALIDATE $? "REDIS STARTED"
 echo
 netstat -tuln | awk '{print $1, $4}' | grep -i '^tcp'
 echo "--------------------------------THE-END--------------------------------------------------------"
-echo "${YELLOW}SCRIPT EXCEUTION DONE TIME : $DATE"
+echo -e  "${YELLOW}SCRIPT EXCEUTION DONE TIME : $DATE"
