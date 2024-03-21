@@ -54,10 +54,10 @@ VALIDATE $? "COMMUNITY SERVER INSTALLED"
 echo "--------------------------------------------------------------------------------------"
 echo
 systemctl enable mysqld
-VALIDATE "systemctl enabled mysqld"
+VALIDATE $? "enabled mysqld"
 echo
 systemctl start mysqld
-VALIDATE "systemctl started mysqld"     
+VALIDATE $? "started mysqld"     
 echo "----------------------------------------------------------------------------------------"
 echo -e "${YELLOW}We need to change the default root password in order to start using the database service"
 mysql_secure_installation --set-root-pass RoboShop@1
