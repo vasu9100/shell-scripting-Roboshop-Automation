@@ -76,14 +76,14 @@ unzip -o /tmp/shipping.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo -e "${GREEN}PACKAGE CLEANING STARTED $RESET"
-mvn clean package
+mvn clean package &>>$LOG_FILE
 VALIDATE $? "PACAKGE CLEANING"
 mv target/shipping-1.0.jar shipping.jar
 VALIDATE $? "JAR FILE RENAMED"
 echo "-----------------------------------------------------------------------------------------"
 echo
-cp /home/centos/shell-scripting-Roboshop-Automation/shipping.service /etc/systemd/system/shipping.service
-VALIDATE "Shipping Service FILE Copied"
+cp /home/centos/shell-scripting-Roboshop-Automation/shipping.service /etc/systemd/system/shipping.service &>>$LOG_FILE
+VALIDATE $? "Shipping Service FILE Copied"
 echo
 systemctl daemon-reload
 VALIDATE $? "DAEMON RELOADED"
