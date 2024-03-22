@@ -20,9 +20,9 @@ USER_ID=$(id -u)
 # Function to validate commands
 VALIDATE() {
     if [ $1 -eq 0 ]; then
-        echo -e "${YELLOW}$2... ${GREEN}SUCCESS${RESET}"
+        echo -e "${GREEN}SUCCESS: $2${RESET}"
     else
-        echo -e "${YELLOW}$2... ${RED}FAILED${RESET}"
+        echo -e "${RED}FAILED: $2${RESET}"
         exit 1
     fi
 }

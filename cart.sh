@@ -68,7 +68,7 @@ echo
 id roboshop &>>$LOG_FILE
 if [ $? -eq 0 ]
 then
-    echo -e "${GREEN}SUCCESS: Robo-shop user already exists. Skipping user creation.${RESET}"
+    echo -e "${YELLOW}SUCCESS: Robo-shop user already exists. Skipping user creation.${RESET}"
 else
     TASK_STARTED "Creating Robo-shop user"
     useradd roboshop &>>$LOG_FILE
@@ -79,7 +79,7 @@ echo
 
 if [ -d /app ]
 then
-    echo -e "${RED}SUCCESS: /app folder already exists. Skipping folder creation.${RESET}"
+    echo -e "${RED}App folder already exists. Skipping folder creation.${RESET}"
 else
     TASK_STARTED "Creating /app folder"
     mkdir -p /app &>>$LOG_FILE
@@ -88,7 +88,7 @@ fi
 
 echo
 
-echo -e "${GREEN}Downloading the application code from the internet.${RESET}"
+echo -e "${YELLOW}Downloading the application code from the internet.${RESET}"
 curl -o /tmp/cart.zip https://roboshop-builds.s3.amazonaws.com/cart.zip &>>$LOG_FILE
 VALIDATE $? "Application code downloading"
 
@@ -102,7 +102,7 @@ VALIDATE $? "Unzipped code into /app"
 
 echo
 
-echo -e "${GREEN}NPM installation started.${RESET}"
+echo -e "${YELLOW}NPM installation started.${RESET}"
 npm install &>>$LOG_FILE
 VALIDATE $? "NPM installation"
 
