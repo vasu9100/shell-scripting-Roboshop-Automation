@@ -107,14 +107,12 @@ else
     echo "Already existing go.mod file found."
 fi
 
-echo "-------------------------------------------------------------------------------------------"
 
 TASK_STARTED "Copying dispatch.service to /etc/systemd/system"
 echo -e "${YELLOW}Copying dispatch.service to /etc/systemd/system${RESET}\n"
 cp /home/centos/shell-scripting-Roboshop-Automation/dispatch.service /etc/systemd/system/dispatch.service
 VALIDATE $? "Dispatch Service Copying"
 
-echo "-------------------------------------------------------------------------------------------"
 
 TASK_STARTED "Reloading Systemd Daemon"
 echo -e "${YELLOW}Reloading systemd daemon${RESET}\n"
@@ -125,13 +123,12 @@ echo -e "${YELLOW}Enabling dispatch service${RESET}\n"
 systemctl enable dispatch
 VALIDATE $? "Dispatch Service Enabled"
 
-echo "-------------------------------------------------------------------------------------------"
 
 TASK_STARTED "Starting Dispatch Service"
 echo -e "${YELLOW}Starting dispatch service${RESET}\n"
 systemctl start dispatch
 VALIDATE $? "Dispatch Service Started"
 
-echo "-------------------------------------------------------------------------------------------"
-echo -e "------------------------------ THE-END--------------------------------------\n"
 echo "SCRIPT END TIME: $0-$DATE"
+echo -e "------------------------------ THE-END--------------------------------------\n"
+
