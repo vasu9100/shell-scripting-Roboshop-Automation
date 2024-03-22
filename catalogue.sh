@@ -1,18 +1,20 @@
 #!/bin/bash
-# Script Name: install_mongodb.sh
+# Script Name: install_catalogue.sh
 # Purpose: This script installs catalogue for the Roboshop application.
 # Author: Gonepudi Srinivas
 # Date: March 20, 2024
 # Version: 1.0
 
-# Define variables
+# Define colors for better readability
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
 RESET='\033[0m'
+
+# Log file setup
 DATE=$(date +'%F-%H-%M-%S')
-USER_ID=$(id -u)
 LOG_FILE="/tmp/$0-$DATE.log"
+USER_ID=$(id -u)
 
 # Function to validate commands
 VALIDATE() {
@@ -24,103 +26,142 @@ VALIDATE() {
     fi
 }
 
+# Function to print task started message
+TASK_STARTED() {
+    echo -e "${YELLOW}Task Started: $1${RESET}"
+}
+
 # Check if the user is root
 if [ "$USER_ID" -eq 0 ]; then
+    echo -e "${GREEN}SCRIPT START TIME: $DATE${RESET}"
     echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}"
 else 
     echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}"
     exit 1
 fi
+
 echo
 echo "----------------------------------------------------------------------------------------"
-echo -e "${GREEN}DISABLING NODE-JS AND ENABLING LATEST VERSION ${RESET}"
+TASK_STARTED "DISABLING NODE-JS AND ENABLING LATEST VERSION"
+echo "----------------------------------------------------------------------------------------"
+
+# Disable and enable Node.js modules
 dnf module disable nodejs -y &>>$LOG_FILE
-VALIDATE $? "DISABLED NODE-JS"
+VALIDATE $? "Disabling Node.js Module"
 echo
 dnf module enable nodejs:18 -y &>>$LOG_FILE
-VALIDATE $? "ENABLED NODE-JS"
+VALIDATE $? "Enabling Node.js 18 Module"
 echo "-----------------------------------------------------------------------------------------"
-echo -e "${YELLOW}$0 is checking Node-js whether installed or not in the system ${RESET}"
-which node
-if [ $? -eq 0 ]
-then
-    echo -e "${GREEN}NODE JS ALREADY INSTALLED ${GREEN}"
+echo -e "${YELLOW}Checking Node.js Installation${RESET}"
+echo "-----------------------------------------------------------------------------------------"
+
+# Check Node.js installation
+if which node &>/dev/null; then
+    echo -e "${GREEN}Node.js already installed.${RESET}"
 else
-    echo -e "${GREEN}NODE JS 18 INSTALLING"
+    echo -e "${GREEN}Installing Node.js 18...${RESET}"
     dnf install nodejs -y &>>$LOG_FILE
-    VALIDATE $? "NODEJS-18 INSTALLATION"
+    VALIDATE $? "Node.js 18 Installation"
 fi
+
 echo "-------------------------------------------------------------------------------------------"
 echo
+echo "-------------------------------------------------------------------------------------------"
+TASK_STARTED "USER SETUP"
+echo "-------------------------------------------------------------------------------------------"
+
+# Check if roboshop user exists
 id roboshop &>>$LOG_FILE
-if [ $? -eq 0 ]
-then
-    echo -e "${GREEN}ROBO-SHOP USER ALREADY AVAILABLE So SKIIPING USER CREATION ${GREEN}"
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}Roboshop user already exists.${RESET} Skipping user creation."
 else
-    echo -e "${GREEN}ROBO-SHOP USER CREATION STARTED"
+    echo -e "${GREEN}Creating Roboshop user...${RESET}"
     useradd roboshop &>>$LOG_FILE
-    VALIDATE $? "ROBO-SHOP USER CREATION PART"
+    VALIDATE $? "Roboshop User Creation"
 fi
 echo "--------------------------------------------------------------------------------------------"
 echo
-if [ -d /app ]
-then
-    echo -e "{$RED}/app FOLDER ALREADY EXISTED SO SKIPPING FOLDER CREATION $RESET"
+echo "--------------------------------------------------------------------------------------------"
+TASK_STARTED "FOLDER SETUP"
+echo "--------------------------------------------------------------------------------------------"
+
+# Check and create /app folder if not exists
+if [ -d /app ]; then
+    echo -e "${RED}/app folder already exists.${RESET} Skipping folder creation."
 else
-    echo -e "${YELLOW}/app FOLDER CREATION STARTED $RESET"
+    echo -e "${YELLOW}/app folder creation started.${RESET}"
     mkdir -p /app &>>$LOG_FILE
-    VALIDATE $? "APP FOLDER CREATION"
+    VALIDATE $? "/app Folder Creation"
 fi
 echo "-------------------------------------------------------------------------------------------"
 echo
-echo -e "${GREEN}DOWNLOADING THE APPLICATION CODE FROM INTERNET ${RESET}"
+echo "-------------------------------------------------------------------------------------------"
+TASK_STARTED "APPLICATION SETUP"
+echo "-------------------------------------------------------------------------------------------"
+
+# Download and setup the application code
+echo -e "${GREEN}Downloading the application code...${RESET}"
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOG_FILE
-VALIDATE $? "APP CODE DOWALOADING"
+VALIDATE $? "Application Code Download"
 echo
-echo -e "${GREEN}UNZIPPING THE DOWNLOAD APP CODE"
+echo -e "${GREEN}Unzipping the application code...${RESET}"
 cd /app
 pwd
 unzip -o /tmp/catalogue.zip &>>$LOG_FILE
-VALIDATE $? "UNZIPPED CODE INTO /APP"
+VALIDATE $? "Application Code Unzipping"
 echo
-echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
-npm install
-VALIDATE $? "NPM INSTALLATION"
+echo -e "${GREEN}Installing Node.js dependencies...${RESET}"
+npm install &>>$LOG_FILE
+VALIDATE $? "Node.js Dependencies Installation"
 echo "-----------------------------------------------------------------------------------------"
 echo
-systemctl daemon-reload
-VALIDATE $? "DAEMON RELOADED"
+echo "-----------------------------------------------------------------------------------------"
+TASK_STARTED "SYSTEMD SETUP"
+echo "-----------------------------------------------------------------------------------------"
+
+# Reload daemon and enable catalogue service
+systemctl daemon-reload &>>$LOG_FILE
+VALIDATE $? "Daemon Reload"
 echo
-cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service
-VALIDATE $? "Catalogue.service Copying"
-systemctl enable catalogue
-VALIDATE $? "ENABLED CATALOGUE SERVICE"
+echo -e "${GREEN}Copying catalogue service file...${RESET}"
+cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
+VALIDATE $? "Catalogue Service Copy"
 echo
-systemctl start catalogue
-VALIDATE $? "STARTED CATALOGUE SERVICE"
+echo -e "${GREEN}Enabling catalogue service...${RESET}"
+systemctl enable catalogue &>>$LOG_FILE
+VALIDATE $? "Catalogue Service Enable"
+echo
+echo -e "${GREEN}Starting catalogue service...${RESET}"
+systemctl start catalogue &>>$LOG_FILE
+VALIDATE $? "Catalogue Service Start"
 echo "-----------------------------------------------------------------------------------------------"
 echo
-echo -e "${YELLOW}SETTING UP MONGO REPOSITORY FILE${RESET}"
+echo "-----------------------------------------------------------------------------------------------"
+TASK_STARTED "MONGODB SETUP"
+echo "-----------------------------------------------------------------------------------------------"
+
+# Setup MongoDB repository and install MongoDB shell
+echo -e "${YELLOW}Setting up MongoDB repository file...${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
-VALIDATE $? "MONGO-REPO FILE COPYING"
-echo "-------------------------------------------------------------------------"
+VALIDATE $? "MongoDB Repository Setup"
 echo
-echo -e "${YELLOW}VERIFYING WHETHER MONGO-DB-ORG-SHELL IS ALREADY INSTALLED ON THE LINUX SYSTEM OR NOT${RESET}"
+echo -e "${YELLOW}Verifying MongoDB shell installation...${RESET}"
 if mongod --version &>>$LOG_FILE; then
-    echo -e "${YELLOW}MONGO-DB IS ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}"
+    echo -e "${YELLOW}MongoDB shell already installed.${RESET} Skipping installation."
 else
-    echo -e "${YELLOW}INSTALLING MONGO-DB${RESET}"
-    echo
+    echo -e "${YELLOW}Installing MongoDB shell...${RESET}"
     dnf install mongodb-org-shell -y &>>$LOG_FILE
-    VALIDATE $? "MONGO-DB-ORG-SHELL INSTALLATION"
+    VALIDATE $? "MongoDB Shell Installation"
 fi
-echo "---------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 echo
-echo -e "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
+echo -e "${GREEN}Loading catalogue data into MongoDB...${RESET}"
 mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
-VALIDATE $? "DATA UPLOADING"
-systemctl restart catalogue
-VALIDATE $? "CATALOGUE RESTARTED"
+VALIDATE $? "Catalogue Data Loading"
+echo
+echo -e "${GREEN}Restarting catalogue service...${RESET}"
+systemctl restart catalogue &>>$LOG_FILE
+VALIDATE $? "Catalogue Service Restart"
 
 echo "------------------------------ THE-END--------------------------------------"
-echo "SCRIPT END TIME: $0-$DATE"
+echo -e "${YELLOW}SCRIPT END TIME: $DATE${RESET}"
