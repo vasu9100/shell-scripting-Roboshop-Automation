@@ -47,24 +47,27 @@ echo -e "CHECKING GO-LANG INSTALLED OR NOT\n"
 if go version; then
     echo -e "${RED}GO-LANG ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}\n"
 else
-    echo -e "${GREEN}GO-LANG NOT INSTALLED. STARTING INSTALLATION.${RESET}\n"
+    echo -e "${YELLOW}GO-LANG NOT INSTALLED. STARTING INSTALLATION.${RESET}\n"
     dnf install golang -y &>>$LOG_FILE
     VALIDATE $? "Go-Lang Installation"
 fi
 
 echo "-------------------------------------------------------------------------------------------"
 
-id roboshop &>>$LOG_FILE
-if [ $? -eq 0 ]; then
+TASK_STARTED "Checking Robo-Shop User Existence"
+echo -e "CHECKING ROBO-SHOP USER EXISTENCE\n"
+if id roboshop &>>$LOG_FILE; then
     echo -e "${GREEN}ROBO-SHOP USER ALREADY AVAILABLE. SKIPPING USER CREATION.${GREEN}\n"
 else
-    echo -e "${GREEN}ROBO-SHOP USER CREATION STARTED${RESET}\n"
+    echo -e "${YELLOW}ROBO-SHOP USER CREATION STARTED${RESET}\n"
     useradd roboshop &>>$LOG_FILE
     VALIDATE $? "Robo-Shop User Creation"
 fi
 
 echo "-------------------------------------------------------------------------------------------"
 
+TASK_STARTED "Checking /app Folder Existence"
+echo -e "CHECKING /app FOLDER EXISTENCE\n"
 if [ -d /app ]; then
     echo -e "${RED}/app FOLDER ALREADY EXISTS. SKIPPING FOLDER CREATION${RESET}\n"
 else
@@ -75,13 +78,15 @@ fi
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}DOWNLOADING THE APPLICATION CODE FROM INTERNET${RESET}\n"
+TASK_STARTED "Downloading the Application Code from Internet"
+echo -e "${YELLOW}DOWNLOADING THE APPLICATION CODE FROM INTERNET${RESET}\n"
 curl -o /tmp/dispatch.zip https://roboshop-builds.s3.amazonaws.com/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "App Code Downloading"
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}UNZIPPING THE DOWNLOADED APP CODE${RESET}\n"
+TASK_STARTED "Unzipping the Downloaded App Code"
+echo -e "${YELLOW}UNZIPPING THE DOWNLOADED APP CODE${RESET}\n"
 cd /app
 pwd
 VALIDATE $? "Directory Changed into /app"
@@ -90,7 +95,8 @@ VALIDATE $? "Unzipped Code into /app"
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}GO-LANG COMMANDS EXECUTION STARTED${RESET}\n"
+TASK_STARTED "Executing Go-Lang Commands"
+echo -e "${YELLOW}GO-LANG COMMANDS EXECUTION STARTED${RESET}\n"
 if [ ! -f "/app/go.mod" ]; then
     echo "GO-LANG COMMANDS EXECUTION STARTED\n"  
     go mod init dispatch
@@ -105,23 +111,26 @@ fi
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}Copying dispatch.service to /etc/systemd/system${RESET}\n"
+TASK_STARTED "Copying dispatch.service to /etc/systemd/system"
+echo -e "${YELLOW}Copying dispatch.service to /etc/systemd/system${RESET}\n"
 cp /home/centos/shell-scripting-Roboshop-Automation/dispatch.service /etc/systemd/system/dispatch.service
 VALIDATE $? "Dispatch Service Copying"
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}Reloading systemd daemon${RESET}\n"
+TASK_STARTED "Reloading Systemd Daemon"
+echo -e "${YELLOW}Reloading systemd daemon${RESET}\n"
 systemctl daemon-reload
 VALIDATE $? "Daemon Reloaded"
 
-echo -e "${GREEN}Enabling dispatch service${RESET}\n"
+echo -e "${YELLOW}Enabling dispatch service${RESET}\n"
 systemctl enable dispatch
 VALIDATE $? "Dispatch Service Enabled"
 
 echo "-------------------------------------------------------------------------------------------"
 
-echo -e "${GREEN}Starting dispatch service${RESET}\n"
+TASK_STARTED "Starting Dispatch Service"
+echo -e "${YELLOW}Starting dispatch service${RESET}\n"
 systemctl start dispatch
 VALIDATE $? "Dispatch Service Started"
 
