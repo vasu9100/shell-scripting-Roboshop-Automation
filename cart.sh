@@ -103,6 +103,9 @@ VALIDATE $? "Unzipped code into /app"
 echo
 
 echo -e "${YELLOW}NPM installation started.${RESET}"
+
+echo
+
 npm install &>>$LOG_FILE
 VALIDATE $? "NPM installation"
 
@@ -116,6 +119,8 @@ echo
 TASK_STARTED "Copying cart.service to /etc/systemd/system"
 cp /home/centos/shell-scripting-Roboshop-Automation/cart.service /etc/systemd/system/cart.service
 VALIDATE $? "Copied cart.service"
+
+echo
 
 systemctl enable cart
 VALIDATE $? "Enabled cart service"
