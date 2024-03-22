@@ -77,7 +77,7 @@ unzip -o /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo "GO-LANG COMMANDS EXECUTION STARTED"
-if [! -f "/app/go.mod" ]
+if [ ! -f "/app/go.mod" ]
 then
     echo "Alredy Existed go Mod"
 else
