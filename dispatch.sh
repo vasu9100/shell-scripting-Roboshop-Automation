@@ -77,12 +77,18 @@ unzip -o /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo "GO-LANG COMMANDS EXECUTION STARTED"
-go mod init dispatch
-VALIDATE $? "Go-Dispatch"
-go get
-VALIDATE $? "Go-Get"
-go build
-VALIDATE $? "Go-BuilD"
+if [-f /app/go.mod ]
+then
+    echo "Alredy Existed go Mod"
+else
+    echo "GO-LANG COMMANDS EXECUTION STARTED"  
+    go mod init dispatch
+    VALIDATE $? "Go-Dispatch"
+    go get
+    VALIDATE $? "Go-Get"
+    go build
+    VALIDATE $? "Go-BuilD"
+fi
 echo "-----------------------------------------------------------------------------------------"
 
 echo
