@@ -123,14 +123,14 @@ echo "--------------------------------------------------------------------------
 TASK_STARTED "SYSTEMD SETUP"
 echo "-----------------------------------------------------------------------------------------------"
 
-# Reload daemon and enable catalogue service
-systemctl daemon-reload &>>$LOG_FILE
-VALIDATE $? "Daemon Reload"
-
 echo
 echo -e "${GREEN}Copying catalogue service file...${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Copy"
+
+# Reload daemon and enable catalogue service
+systemctl daemon-reload &>>$LOG_FILE
+VALIDATE $? "Daemon Reload"
 
 echo
 echo -e "${GREEN}Enabling catalogue service...${RESET}"
