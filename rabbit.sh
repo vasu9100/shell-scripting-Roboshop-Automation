@@ -73,7 +73,7 @@ VALIDATE $? "RABBIT-MQ STARTED"
 
 echo -e "--------------------------------------------------------------------------------------------\n"
 
-id roboshop &>>$LOG_FILE
+rabbitmqctl list_users | grep roboshop &>>$LOG_FILE
 if [ $? -eq 0 ]; then
     echo -e "${YELLOW}Roboshop users already exists.${RESET} Skipping user creation."
 else
