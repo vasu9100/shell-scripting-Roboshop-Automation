@@ -56,7 +56,7 @@ rpm -qa | grep rabbitmq-server
 if [ $? -eq 0 ]; then
     echo -e "RABBIT-MQ ALREADY INSTALLED. SKIPPING THIS PART\n"
 else
-    echo -e "${GREEN}RABBIT-MQ IS NOT EXISTED SO INSTALLING${RESET}\n"
+    echo -e "${YELLOW}RABBIT-MQ IS NOT EXISTED SO INSTALLING${RESET}\n"
     dnf install rabbitmq-server -y &>>$LOG_FILE 
     VALIDATE $? "RABBIT-MQ INSTALLATION"
 fi
@@ -73,13 +73,18 @@ VALIDATE $? "RABBIT-MQ STARTED"
 
 echo -e "--------------------------------------------------------------------------------------------\n"
 
-echo -e "${YELLOW}Adding RoboShop User${RESET}\n"
-rabbitmqctl add_user roboshop roboshop123
-VALIDATE $? "ROBOSHOP USERS ADDED"
+id roboshop &>>$LOG_FILE
+if [ $? -eq 0 ]; then
+    echo -e "${YELLOW}Roboshop users already exists.${RESET} Skipping user creation."
+else
+    echo -e "${YELLOW}Creating Roboshop user...${RESET}"
+    rabbitmqctl add_user roboshop roboshop123
+    VALIDATE $? "Roboshop User Creation"
+fi
 
 echo -e "${YELLOW}Setting Permissions${RESET}\n"
 rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
 VALIDATE $? "PERMISSIONS SETUP"
-echo -e "${GREEN}SCRIPT EXECUTION DONE TIME: $DATE${RESET}\n"
+echo -e "${YELLOW}SCRIPT EXECUTION DONE TIME: $DATE${RESET}\n"
 echo -e "--------------------------------THE-END--------------------------------------------------------\n"
 
