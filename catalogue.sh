@@ -102,19 +102,24 @@ TASK_STARTED "APPLICATION SETUP"
 echo "-----------------------------------------------------------------------------------------------"
 
 # Download and setup the application code
-echo -e "${GREEN}Downloading the application code...${RESET}"
+echo -e "${YELLOW}Downloading the application code...${RESET}"
+
+echo
+
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "Application Code Download"
 
 echo
-echo -e "${GREEN}Unzipping the application code...${RESET}"
+echo -e "${YELLOW}Unzipping the application code...${RESET}"
+echo
 cd /app
-pwd
 unzip -o /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "Application Code Unzipping"
+echo
+echo -e "${YELLOW}Installing Node.js dependencies...${RESET}"
 
 echo
-echo -e "${GREEN}Installing Node.js dependencies...${RESET}"
+
 npm install &>>$LOG_FILE
 VALIDATE $? "Node.js Dependencies Installation"
 
@@ -122,53 +127,52 @@ echo
 echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "SYSTEMD SETUP"
 echo "-----------------------------------------------------------------------------------------------"
-
+echo -e "${YELLOW}Copying catalogue service file...${RESET}"
 echo
-echo -e "${GREEN}Copying catalogue service file...${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Copy"
-
+echo
 # Reload daemon and enable catalogue service
 systemctl daemon-reload &>>$LOG_FILE
 VALIDATE $? "Daemon Reload"
-
 echo
 echo -e "${GREEN}Enabling catalogue service...${RESET}"
 systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Enable"
-
 echo
 echo -e "${GREEN}Starting catalogue service...${RESET}"
 systemctl start catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Start"
-
 echo
 echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "MONGODB SETUP"
 echo "-----------------------------------------------------------------------------------------------"
 
 # Setup MongoDB repository and install MongoDB shell
-echo -e "${PINK}Setting up MongoDB repository file...${RESET}"
+echo -e "${YELLOW}Setting up MongoDB repository file...${RESET}"
+echo
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? "MongoDB Repository Setup"
-
 echo
-echo -e "${PINK}Verifying MongoDB shell installation...${RESET}"
+echo -e "${YELLOW}Verifying MongoDB shell installation...${RESET}"
 if mongod --version &>>$LOG_FILE; then
-    echo -e "${PINK}MongoDB shell already installed.${RESET} Skipping installation."
+    echo -e "${YELLOW}MongoDB shell already installed.${RESET} Skipping installation."
 else
-    echo -e "${PINK}Installing MongoDB shell...${RESET}"
+    echo -e "${YELLOW}Installing MongoDB shell...${RESET}"
+    echo
     dnf install mongodb-org-shell -y &>>$LOG_FILE
     VALIDATE $? "MongoDB Shell Installation"
 fi
 
 echo
-echo -e "${GREEN}Loading catalogue data into MongoDB...${RESET}"
+echo -e "${YELLOW}Loading catalogue data into MongoDB...${RESET}"
+echo
 mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "Catalogue Data Loading"
 
 echo
 echo -e "${GREEN}Restarting catalogue service...${RESET}"
+echo
 systemctl restart catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Restart"
 
