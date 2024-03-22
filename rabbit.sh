@@ -50,7 +50,7 @@ then
     echo "RABBIT-MQ ALREADY INSTALLED SO SKIPPING THIS PART"
 else
     echo -e "RABBIT-MQ IS NOT EXISTED SO INSTALLAING"
-    dnf install rabbitmq-server -y 
+    dnf install rabbitmq-server -y &>>$LOG_FILE 
     VALIDATE $? "RABBIT-MQ INSTALLATION" 
 fi
 echo "-------------------------------------------------------------------------------------------"       
@@ -60,7 +60,8 @@ VALIDATE $? "RABBIT-MQ ENABLED"
 systemctl start rabbitmq-server
 VALIDATE $? "RABBIT-MQ STARTED"
 echo "--------------------------------------------------------------------------------------------"
-echorabbitmqctl add_user roboshop roboshop123
+echo
+rabbitmqctl add_user roboshop roboshop123
 VALIDATE $? "ROBOSHOP USERS ADDED"
 rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
 VALIDATE $? "PERMISSIONS SETUP"
