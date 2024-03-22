@@ -5,10 +5,11 @@
 # Date: March 20, 2024
 # Version: 1.0
 
-# Define variables
+# Define colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+PINK='\033[0;35m'   # Pink color added
 RESET='\033[0m'
 DATE=$(date +'%F-%H-%M-%S')
 USER_ID=$(id -u)
@@ -17,53 +18,68 @@ LOG_FILE="/tmp/$0-$DATE.log"
 # Function to validate commands
 VALIDATE() {
     if [ "$1" -eq 0 ]; then
-        echo -e "${YELLOW}$2... ${GREEN}SUCCESS${RESET}"
+        echo -e "${YELLOW}$2... ${GREEN}SUCCESS${RESET}\n"
     else
-        echo -e "${YELLOW}$2... ${RED}FAILED${RESET}"
+        echo -e "${YELLOW}$2... ${RED}FAILED${RESET}\n"
         exit 1
     fi
 }
 
+# Function to print task start messages
+TASK_STARTED() {
+    echo "-------------------------------------------------------------------------------------------"
+    echo -e "${PINK}Task Started: $1${RESET}\n"
+    echo "-------------------------------------------------------------------------------------------"
+}
+
 # Check if the user is root
 if [ "$USER_ID" -eq 0 ]; then
-    echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}"
+    echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}\n"
 else 
-    echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}"
+    echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}\n"
     exit 1
 fi
 
-echo
-echo "----------------------------------------------------------------------------------------"
-echo -e "${YELLOW}SCRIPT RPM STARTED DOWNLOADING"
+TASK_STARTED "Downloading Script RPM"
+echo -e "${YELLOW}SCRIPT RPM STARTED DOWNLOADING${RESET}\n"
 curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | bash &>>$LOG_FILE
 VALIDATE $? "SCRIPT RPM INSTALLATION"
-echo "----------------------------------------------------------------------------------------"
-echo
-echo -e "$YELLOW}Configure YUM Repos for RabbitMQ."
+
+TASK_STARTED "Configuring YUM Repos for RabbitMQ"
+echo -e "${YELLOW}Configure YUM Repos for RabbitMQ.${RESET}\n"
 curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | bash &>>$LOG_FILE
 VALIDATE $? "YUM REPO FOR RABBIT SETUP"
-echo "-----------------------------------------------------------------------------------------"
-echo -e "${YELLOW}RABBIT-MQ INSTALLATION START"
+
+TASK_STARTED "Installing RabbitMQ"
+echo -e "${YELLOW}RABBIT-MQ INSTALLATION START${RESET}\n"
 rpm -qa | grep rabbitmq-server
-if [ $? -eq 0 ]
-then
-    echo "RABBIT-MQ ALREADY INSTALLED SO SKIPPING THIS PART"
+if [ $? -eq 0 ]; then
+    echo -e "RABBIT-MQ ALREADY INSTALLED. SKIPPING THIS PART\n"
 else
-    echo -e "RABBIT-MQ IS NOT EXISTED SO INSTALLAING"
+    echo -e "${GREEN}RABBIT-MQ IS NOT EXISTED SO INSTALLING${RESET}\n"
     dnf install rabbitmq-server -y &>>$LOG_FILE 
-    VALIDATE $? "RABBIT-MQ INSTALLATION" 
+    VALIDATE $? "RABBIT-MQ INSTALLATION"
 fi
-echo "-------------------------------------------------------------------------------------------"       
-echo
+
+echo -e "-------------------------------------------------------------------------------------------\n"       
+
+echo -e "${YELLOW}Enabling RabbitMQ Service${RESET}\n"
 systemctl enable rabbitmq-server
 VALIDATE $? "RABBIT-MQ ENABLED"
+
+echo -e "${YELLOW}Starting RabbitMQ Service${RESET}\n"
 systemctl start rabbitmq-server
 VALIDATE $? "RABBIT-MQ STARTED"
-echo "--------------------------------------------------------------------------------------------"
-echo
+
+echo -e "--------------------------------------------------------------------------------------------\n"
+
+echo -e "${YELLOW}Adding RoboShop User${RESET}\n"
 rabbitmqctl add_user roboshop roboshop123
 VALIDATE $? "ROBOSHOP USERS ADDED"
+
+echo -e "${YELLOW}Setting Permissions${RESET}\n"
 rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
 VALIDATE $? "PERMISSIONS SETUP"
-echo "--------------------------------THE-END--------------------------------------------------------"
-echo -e  "${YELLOW}SCRIPT EXCEUTION DONE TIME : $DATE"
+echo -e "${GREEN}SCRIPT EXECUTION DONE TIME: $DATE${RESET}\n"
+echo -e "--------------------------------THE-END--------------------------------------------------------\n"
+
