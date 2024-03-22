@@ -8,7 +8,8 @@
 # Define colors for better readability
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
+PINK='\033[1;35m'
 RESET='\033[0m'
 
 # Log file setup
@@ -29,8 +30,11 @@ VALIDATE() {
 
 # Function to print task started message
 TASK_STARTED() {
-    echo -e "${GREEN}Task Started: $1${RESET}"
+    echo -e "${PINK}Task Started: $1${RESET}"
 }
+
+# Print script start time
+echo -e "${YELLOW}SCRIPT START TIME: $DATE${RESET}"
 
 # Check if the user is root
 if [ "$USER_ID" -eq 0 ]; then
@@ -47,7 +51,7 @@ echo "--------------------------------------------------------------------------
 
 # Check if NGINX is already installed
 if command -v nginx &>/dev/null; then
-    echo -e "${GREEN}NGINX is already installed.${RESET} Skipping installation."
+    echo -e "${PINK}Skipping installation.${RESET} NGINX is already installed."
 else
     echo -e "Installing NGINX..."
     dnf install nginx -y &>>$LOG_FILE
@@ -74,7 +78,7 @@ echo "--------------------------------------------------------------------------
 
 # Backup HTML folder
 if [ -d /usr/share/nginx/html ]; then
-    echo -e "Creating backup of HTML folder..."
+    echo -e "${PINK}Creating backup of HTML folder...${RESET}"
     mkdir -p $BACKUP &>>$LOG_FILE
     cp -r /usr/share/nginx/html $BACKUP
     VALIDATE $? "Backup HTML Folder"
@@ -125,4 +129,4 @@ systemctl restart nginx
 VALIDATE $? "Restarting NGINX Service"
 
 echo -e "${GREEN}-----------------------------------THE-END--------------------------------------------------${RESET}"
-echo -e "${GREEN}SCRIPT EXECUTION DONE TIME : $DATE${RESET}"
+echo -e "${YELLOW}SCRIPT EXECUTION DONE TIME : $DATE${RESET}"
