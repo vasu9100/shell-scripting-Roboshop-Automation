@@ -79,15 +79,15 @@ echo
 echo "GO-LANG COMMANDS EXECUTION STARTED"
 if [ ! -f "/app/go.mod" ]
 then
-    echo "Alredy Existed go Mod"
-else
     echo "GO-LANG COMMANDS EXECUTION STARTED"  
     go mod init dispatch
     VALIDATE $? "Go-Dispatch"
     go get
     VALIDATE $? "Go-Get"
     go build
-    VALIDATE $? "Go-BuilD"
+    VALIDATE $? "Go-Build"
+else
+    echo "Already existing go.mod file found."
 fi
 echo "-----------------------------------------------------------------------------------------"
 
