@@ -5,10 +5,11 @@
 # Date: March 20, 2024
 # Version: 1.0
 
-# Define variables
+# Define colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+PINK='\033[0;35m'   # Pink color added
 RESET='\033[0m'
 DATE=$(date +'%F-%H-%M-%S')
 USER_ID=$(id -u)
@@ -24,101 +25,103 @@ VALIDATE() {
     fi
 }
 
+# Function to print task start messages
+TASK() {
+    TASK_NAME="$1"
+    echo "-------------------------------------------------------------------------------------------"
+    echo -e "${PINK}Task: $TASK_NAME${RESET}"
+    echo "-------------------------------------------------------------------------------------------"
+}
+
 # Check if the user is root
 if [ "$USER_ID" -eq 0 ]; then
-    echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}"
+    TASK "Root User Verification"
+    echo -e "${GREEN}SUCCESS: You are a root user.${RESET}"
 else 
+    TASK "Root User Verification"
     echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}"
     exit 1
 fi
 echo
-echo "----------------------------------------------------------------------------------------"
-echo -e "${GREEN}DISABLING NODE-JS AND ENABLING LATEST VERSION ${RESET}"
+
+TASK "Node.js Installation"
 dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "DISABLED NODE-JS"
-echo
 dnf module enable nodejs:18 -y &>>$LOG_FILE
 VALIDATE $? "ENABLED NODE-JS"
-echo "-----------------------------------------------------------------------------------------"
-echo -e "${YELLOW}$0 is checking Node-js whether installed or not in the system ${RESET}"
 which node
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
     echo -e "${GREEN}NODE JS ALREADY INSTALLED ${GREEN}"
 else
     echo -e "${GREEN}NODE JS 18 INSTALLING"
     dnf install nodejs -y &>>$LOG_FILE
     VALIDATE $? "NODEJS-18 INSTALLATION"
 fi
-echo "-------------------------------------------------------------------------------------------"
-echo
+
+TASK "User Creation"
 id roboshop &>>$LOG_FILE
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
     echo -e "${GREEN}ROBO-SHOP USER ALREADY AVAILABLE So SKIIPING USER CREATION ${GREEN}"
 else
     echo -e "${GREEN}ROBO-SHOP USER CREATION STARTED"
     useradd roboshop &>>$LOG_FILE
     VALIDATE $? "ROBO-SHOP USER CREATION PART"
 fi
-echo "--------------------------------------------------------------------------------------------"
-echo
-if [ -d /app ]
-then
+
+TASK "Folder Creation"
+if [ -d /app ]; then
     echo -e "{$RED}/app FOLDER ALREADY EXISTED SO SKIPPING FOLDER CREATION $RESET"
 else
-    echo -e "${YELLOW}/app FOLDER CREATION STARTED $RESET"
     mkdir -p /app &>>$LOG_FILE
     VALIDATE $? "APP FOLDER CREATION"
 fi
-echo "-------------------------------------------------------------------------------------------"
-echo
-echo -e "${GREEN}DOWNLOADING THE APPLICATION CODE FROM INTERNET ${RESET}"
+
+TASK "Application Code Download"
 curl -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>>$LOG_FILE
 VALIDATE $? "APP CODE DOWALOADING"
-echo
-echo -e "${GREEN}UNZIPPING THE DOWNLOAD APP CODE"
+
+TASK "Unzipping Application Code"
 cd /app
-pwd
 unzip -o /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
-echo
-echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
+
+TASK "NPM Installation"
 npm install
 VALIDATE $? "NPM INSTALLATION"
-echo "-----------------------------------------------------------------------------------------"
-echo
+
+TASK "Daemon Reload"
 systemctl daemon-reload
 VALIDATE $? "DAEMON RELOADED"
-echo
-cp /home/centos/shell-scripting-Roboshop-Automation/user.service /etc/systemd/system/user.service
+
+TASK "Copy Service File"
+cp /home/centos/shell-scripting-Roboshop-Automation/user.service /etc/systemd/system/user.service &>>$LOG_FILE
 VALIDATE $? "user.service Copying"
+
+TASK "Enable User Service"
 systemctl enable user
 VALIDATE $? "ENABLED USER SERVICE"
-echo
+
+TASK "Start User Service"
 systemctl start user
 VALIDATE $? "STARTED USER SERVICE"
-echo "-----------------------------------------------------------------------------------------------"
-echo
-echo -e "${YELLOW}SETTING UP MONGO REPOSITORY FILE${RESET}"
+
+TASK "Mongo Repository Setup"
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? "MONGO-REPO FILE COPYING"
-echo "-------------------------------------------------------------------------"
-echo
-echo -e "${YELLOW}VERIFYING WHETHER MONGO-DB-ORG-SHELL IS ALREADY INSTALLED ON THE LINUX SYSTEM OR NOT${RESET}"
+
+TASK "MongoDB Installation"
 if mongod --version &>>$LOG_FILE; then
     echo -e "${YELLOW}MONGO-DB IS ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}"
 else
-    echo -e "${YELLOW}INSTALLING MONGO-DB${RESET}"
-    echo
     dnf install mongodb-org-shell -y &>>$LOG_FILE
     VALIDATE $? "MONGO-DB-ORG-SHELL INSTALLATION"
 fi
-echo "---------------------------------------------------------------------------"
-echo
-echo -e "${GREEN}LOADING CATALOGUE DATA INTO MONGO-DB"
+
+TASK "Loading Catalogue Data into MongoDB"
 mongo --host mongo.gonepudirobot.online </app/schema/user.js &>>$LOG_FILE
 VALIDATE $? "DATA UPLOADING"
+
+TASK "Restart User Service"
 systemctl restart user
 VALIDATE $? "USER RESTARTED"
 
