@@ -33,7 +33,7 @@ else
 fi
 echo
 echo "----------------------------------------------------------------------------------------"
-echo "CHECKING DISPATCH INSTALLED OR NOT"
+echo "CHECKING  GO-LANG INSTALLED OR NOT"
 if go version
 then
     echo -e "${RED}GO-LANG ALREADY INSTALLED SO SKIPPING INSTALLATION"
@@ -72,15 +72,16 @@ echo
 echo -e "${GREEN}UNZIPPING THE DOWNLOAD APP CODE"
 cd /app
 pwd
+VALIDATE $? "DIRECTORY CHANGED INTO APP"
 unzip -o /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
-echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
-go mod init dispatch
+echo "GO-LANG COMMANDS EXECUTION STARTED"
+go mod init dispatch &>>$LOG_FILE
 VALIDATE $? "Go-Dispatch"
-go get
+go get &>>$LOG_FILE
 VALIDATE $? "Go-Get"
-go build &>>$LOG_FILE
+go build &>>$LOG_FILE 
 VALIDATE $? "Go-BuilD"
 echo "-----------------------------------------------------------------------------------------"
 
