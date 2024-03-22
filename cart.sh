@@ -103,7 +103,7 @@ VALIDATE $? "Unzipped code into /app"
 echo
 
 echo -e "${GREEN}NPM installation started.${RESET}"
-npm install
+npm install &>>$LOG_FILE
 VALIDATE $? "NPM installation"
 
 echo
