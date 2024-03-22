@@ -9,6 +9,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+PINK='\033[1;35m'
 RESET='\033[0m'
 DATE=$(date +'%F-%H-%M-%S')
 USER_ID=$(id -u)
