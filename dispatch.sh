@@ -43,7 +43,7 @@ else
 fi
 
 TASK_STARTED "Checking Go-Lang Installed or Not"
-echo -e "CHECKING GO-LANG INSTALLED OR NOT\n"
+echo -e "${YELLOW}GOCHECKING GO-LANG INSTALLED OR NOT\n"
 if go version; then
     echo -e "${RED}GO-LANG ALREADY INSTALLED. SKIPPING INSTALLATION.${RESET}\n"
 else
@@ -52,7 +52,7 @@ else
     VALIDATE $? "Go-Lang Installation"
 fi
 
-echo "-------------------------------------------------------------------------------------------"
+
 
 TASK_STARTED "Checking Robo-Shop User Existence"
 echo -e "CHECKING ROBO-SHOP USER EXISTENCE\n"
@@ -64,10 +64,10 @@ else
     VALIDATE $? "Robo-Shop User Creation"
 fi
 
-echo "-------------------------------------------------------------------------------------------"
+
 
 TASK_STARTED "Checking /app Folder Existence"
-echo -e "CHECKING /app FOLDER EXISTENCE\n"
+echo -e "${YELLOW}GOCHECKING /app FOLDER EXISTENCE\n"
 if [ -d /app ]; then
     echo -e "${RED}/app FOLDER ALREADY EXISTS. SKIPPING FOLDER CREATION${RESET}\n"
 else
@@ -76,14 +76,13 @@ else
     VALIDATE $? "App Folder Creation"
 fi
 
-echo "-------------------------------------------------------------------------------------------"
 
 TASK_STARTED "Downloading the Application Code from Internet"
 echo -e "${YELLOW}DOWNLOADING THE APPLICATION CODE FROM INTERNET${RESET}\n"
 curl -o /tmp/dispatch.zip https://roboshop-builds.s3.amazonaws.com/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "App Code Downloading"
 
-echo "-------------------------------------------------------------------------------------------"
+
 
 TASK_STARTED "Unzipping the Downloaded App Code"
 echo -e "${YELLOW}UNZIPPING THE DOWNLOADED APP CODE${RESET}\n"
@@ -93,7 +92,6 @@ VALIDATE $? "Directory Changed into /app"
 unzip -o /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "Unzipped Code into /app"
 
-echo "-------------------------------------------------------------------------------------------"
 
 TASK_STARTED "Executing Go-Lang Commands"
 echo -e "${YELLOW}GO-LANG COMMANDS EXECUTION STARTED${RESET}\n"
