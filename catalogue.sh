@@ -137,10 +137,12 @@ systemctl daemon-reload &>>$LOG_FILE
 VALIDATE $? "Daemon Reload"
 echo
 echo -e "${GREEN}Enabling catalogue service...${RESET}"
+echo
 systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Enable"
 echo
 echo -e "${GREEN}Starting catalogue service...${RESET}"
+echo
 systemctl start catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Start"
 echo
@@ -154,7 +156,8 @@ echo
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? "MongoDB Repository Setup"
 echo
-echo -e "${YELLOW}Verifying MongoDB shell installation...${RESET}"
+echo -e "${YELLOW}Verifying MongoDB shell installation...Already OR Not${RESET}"
+echo
 if mongod --version &>>$LOG_FILE; then
     echo -e "${YELLOW}MongoDB shell already installed.${RESET} Skipping installation."
 else
@@ -171,7 +174,7 @@ mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "Catalogue Data Loading"
 
 echo
-echo -e "${GREEN}Restarting catalogue service...${RESET}"
+echo -e "${YELLOW}Restarting catalogue service...${RESET}"
 echo
 systemctl restart catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Restart"
