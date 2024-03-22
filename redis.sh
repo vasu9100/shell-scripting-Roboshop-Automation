@@ -64,15 +64,15 @@ TASK_STARTED "Updating Listen Address"
 echo -e "${YELLOW}Updating listen address from 127.0.0.1 to 0.0.0.0 in /etc/redis.conf${RESET}\n"
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf
 VALIDATE $? "UPDATION LISTEN ADDRESS"
-
+echo
 echo -e "${YELLOW}Enabling Redis${RESET}\n"
 systemctl enable redis
 VALIDATE $? "REDIS ENABLED"
-
+echo
 echo -e "${YELLOW}Starting Redis${RESET}\n"
 systemctl start redis
 VALIDATE $? "REDIS STARTED"
-
+echo
 echo -e "${YELLOW}Checking Redis Status${RESET}\n"
 netstat -tuln | awk '{print $1, $4}' | grep -i '^tcp'
 
