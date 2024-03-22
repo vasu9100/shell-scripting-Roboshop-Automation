@@ -18,9 +18,9 @@ LOG_FILE="/tmp/$0-$DATE.log"
 # Function to validate commands
 VALIDATE() {
     if [ $1 -eq 0 ]; then
-        echo -e "${YELLOW}$2... ${GREEN}SUCCESS${RESET}\n"
+        echo -e "${GREEN}SUCCESS: $2${RESET}"
     else
-        echo -e "${YELLOW}$2... ${RED}FAILED${RESET}\n"
+        echo -e "${RED}FAILED: $2${RESET}"
         exit 1
     fi
 }
