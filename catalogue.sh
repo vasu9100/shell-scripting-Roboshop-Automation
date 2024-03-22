@@ -9,6 +9,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+PINK='\033[1;35m'
 RESET='\033[0m'
 
 # Log file setup
@@ -41,9 +42,9 @@ else
 fi
 
 echo
-echo "----------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "DISABLING NODE-JS AND ENABLING LATEST VERSION"
-echo "----------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Disable and enable Node.js modules
 dnf module disable nodejs -y &>>$LOG_FILE
@@ -51,9 +52,11 @@ VALIDATE $? "Disabling Node.js Module"
 echo
 dnf module enable nodejs:18 -y &>>$LOG_FILE
 VALIDATE $? "Enabling Node.js 18 Module"
-echo "-----------------------------------------------------------------------------------------"
-echo -e "${YELLOW}Checking Node.js Installation${RESET}"
-echo "-----------------------------------------------------------------------------------------"
+
+echo
+echo "-----------------------------------------------------------------------------------------------"
+echo -e "${PINK}Checking Node.js Installation${RESET}"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Check Node.js installation
 if which node &>/dev/null; then
@@ -64,11 +67,10 @@ else
     VALIDATE $? "Node.js 18 Installation"
 fi
 
-echo "-------------------------------------------------------------------------------------------"
 echo
-echo "-------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "USER SETUP"
-echo "-------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Check if roboshop user exists
 id roboshop &>>$LOG_FILE
@@ -79,11 +81,11 @@ else
     useradd roboshop &>>$LOG_FILE
     VALIDATE $? "Roboshop User Creation"
 fi
-echo "--------------------------------------------------------------------------------------------"
+
 echo
-echo "--------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "FOLDER SETUP"
-echo "--------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Check and create /app folder if not exists
 if [ -d /app ]; then
@@ -93,71 +95,78 @@ else
     mkdir -p /app &>>$LOG_FILE
     VALIDATE $? "/app Folder Creation"
 fi
-echo "-------------------------------------------------------------------------------------------"
+
 echo
-echo "-------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "APPLICATION SETUP"
-echo "-------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Download and setup the application code
 echo -e "${GREEN}Downloading the application code...${RESET}"
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "Application Code Download"
+
 echo
 echo -e "${GREEN}Unzipping the application code...${RESET}"
 cd /app
 pwd
 unzip -o /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "Application Code Unzipping"
+
 echo
 echo -e "${GREEN}Installing Node.js dependencies...${RESET}"
 npm install &>>$LOG_FILE
 VALIDATE $? "Node.js Dependencies Installation"
-echo "-----------------------------------------------------------------------------------------"
+
 echo
-echo "-----------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "SYSTEMD SETUP"
-echo "-----------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------"
 
 # Reload daemon and enable catalogue service
 systemctl daemon-reload &>>$LOG_FILE
 VALIDATE $? "Daemon Reload"
+
 echo
 echo -e "${GREEN}Copying catalogue service file...${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Copy"
+
 echo
 echo -e "${GREEN}Enabling catalogue service...${RESET}"
 systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Enable"
+
 echo
 echo -e "${GREEN}Starting catalogue service...${RESET}"
 systemctl start catalogue &>>$LOG_FILE
 VALIDATE $? "Catalogue Service Start"
-echo "-----------------------------------------------------------------------------------------------"
+
 echo
 echo "-----------------------------------------------------------------------------------------------"
 TASK_STARTED "MONGODB SETUP"
 echo "-----------------------------------------------------------------------------------------------"
 
 # Setup MongoDB repository and install MongoDB shell
-echo -e "${YELLOW}Setting up MongoDB repository file...${RESET}"
+echo -e "${PINK}Setting up MongoDB repository file...${RESET}"
 cp /home/centos/shell-scripting-Roboshop-Automation/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? "MongoDB Repository Setup"
+
 echo
-echo -e "${YELLOW}Verifying MongoDB shell installation...${RESET}"
+echo -e "${PINK}Verifying MongoDB shell installation...${RESET}"
 if mongod --version &>>$LOG_FILE; then
-    echo -e "${YELLOW}MongoDB shell already installed.${RESET} Skipping installation."
+    echo -e "${PINK}MongoDB shell already installed.${RESET} Skipping installation."
 else
-    echo -e "${YELLOW}Installing MongoDB shell...${RESET}"
+    echo -e "${PINK}Installing MongoDB shell...${RESET}"
     dnf install mongodb-org-shell -y &>>$LOG_FILE
     VALIDATE $? "MongoDB Shell Installation"
 fi
-echo "-----------------------------------------------------------------------------------------------"
+
 echo
 echo -e "${GREEN}Loading catalogue data into MongoDB...${RESET}"
 mongo --host mongo.gonepudirobot.online </app/schema/catalogue.js &>>$LOG_FILE
 VALIDATE $? "Catalogue Data Loading"
+
 echo
 echo -e "${GREEN}Restarting catalogue service...${RESET}"
 systemctl restart catalogue &>>$LOG_FILE
