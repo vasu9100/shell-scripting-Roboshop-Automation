@@ -34,12 +34,12 @@ fi
 echo
 echo "----------------------------------------------------------------------------------------"
 echo "CHECKING PYTHON INSTALLED OR NOT"
-if python -V
+if python3.6 --version
 then
     echo -e "${RED}PYTHON ALREADY INSTALLED SO SKIPPING INSTALLATION"
 else
     echo -e "${GREEN}PYTHON NOT INSTALLED SO STARTED INSTALLATION PART"
-    dnf install python36 gcc python3-devel -y
+    dnf install python36 gcc python3-devel -y &>>$LOG_FILE
     VALIDATE $? "PYTHON INSTALLATION"
 fi       
 echo "-------------------------------------------------------------------------------------------"
@@ -76,7 +76,7 @@ unzip -o /tmp/payment.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 echo
 echo -e "${GREEN}NPM INSTALLATION STARTED $RESET"
-pip3.6 install -r requirements.txt
+pip3.6 install -r requirements.txt &>>$LOG_FILE
 VALIDATE $? "PIP 3.6 INSTALLATION"
 echo "-----------------------------------------------------------------------------------------"
 
