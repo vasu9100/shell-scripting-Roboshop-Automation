@@ -86,7 +86,7 @@ unzip -o /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "UNZIPPED CODE INTO /APP"
 
 TASK "NPM Installation"
-npm install
+npm install &>>$LOG_FILE
 VALIDATE $? "NPM INSTALLATION"
 
 TASK "Daemon Reload"
