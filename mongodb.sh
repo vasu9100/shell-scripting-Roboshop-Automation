@@ -29,7 +29,9 @@ VALIDATE() {
 
 # Function to print task started message
 TASK_STARTED() {
+    echo "==============================================================="
     echo -e "${PINK}Task Started: $1${RESET}"
+    echo "==============================================================="
 }
 
 # Check if the user is root
