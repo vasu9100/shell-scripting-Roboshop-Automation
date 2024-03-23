@@ -36,8 +36,8 @@ do
     echo -e "${YELLOW}LOGGING: ${RESET}$name"
     
     # Copy files to the remote server
-    scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
+    scp -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
     VALIDATE $? "COPYING DONE $name"
-    scp -i /home/centos/.ssh/id_rsa centos@$name:sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh
+    scp centos@$name:sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh
     VALIDATE $? "Script Exceution"
 done
