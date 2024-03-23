@@ -14,9 +14,9 @@ RESET='\033[0m'
 
 # Log file setup
 DATE=$(date +'%F-%H-%M-%S')
-LOG_FILE="/tmp/$0-$DATE.log"
+LOG_FILE="/home/centos/$0-$DATE.log"
 USER_ID=$(id -u)
-BACKUP="/tmp/HTML-BACKUP-$DATE"
+BACKUP="/home/centos/HTML-BACKUP-$DATE"
 
 # Function to validate commands
 VALIDATE() {
