@@ -49,4 +49,14 @@ else
     echo
     ssh-keygen -t rsa -b 4096 -f /home/centos/id_rsa
     VALIDATE $? "SSH KEY GENERATION"
-fi    
+fi
+TASK_STARTED "PUBLIC-IP GATHERING"
+PUBLIC_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+
+for i in $PUBLIC_IP; do
+    echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCES${RESET}/n"
+    sshpass -p DevOps321 ssh -i centos@${PUBLIC_IP}
+    VALIDATE $? "Logged into ${PUBLIC_IP}"
+done    
+
+
