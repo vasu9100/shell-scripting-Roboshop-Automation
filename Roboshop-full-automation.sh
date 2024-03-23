@@ -1,4 +1,9 @@
 #!/bin/bash
+# Script Name: install_mongodb.sh
+# Purpose: This script installs cart for the Roboshop application.
+# Author: Gonepudi Srinivas
+# Date: March 20, 2024
+# Version: 1.0
 
 # Define colors
 RED='\033[0;31m'
@@ -24,9 +29,10 @@ VALIDATE() {
     fi
 }
 
-# Remote commands to be executed
+# Define remote commands to execute after copying the folder
+remote_commands="sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh"
 
-# Get running instance names excluding specific IP
+# Get running instance names excluding the specified IP
 SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output json | jq '.[] | select(. != "50.17.150.240")' | tr -d '"')
 
 # Loop through each instance and execute the script
@@ -38,7 +44,8 @@ do
     # Copy files to the remote server
     scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
     VALIDATE $? "COPYING DONE $name"
-    ssh -i /home/centos/.ssh/id_rsa centos@$name:"sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh"
-    VALIDATE $? "scripting DONE $name"
     
+    # Execute the script on the remote server
+    ssh -i /home/centos/.ssh/id_rsa centos@$name "$remote_commands"
+    VALIDATE $? "EXECUTING SCRIPT $name"
 done
