@@ -38,7 +38,7 @@ else
 fi
 
 echo
-ssh centos@ 54.166.253.186 <<EOF
+ssh centos@54.166.253.186 <<EOF
 scp -r /home/centos/shell-scripting-Roboshop-Automation centos@54.166.253.186:/home/centos/
 EOF
 
