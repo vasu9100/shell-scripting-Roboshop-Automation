@@ -25,7 +25,6 @@ VALIDATE() {
 }
 
 # Remote commands to be executed
-remote_commands="cp -r /home/centos/shell-scripting-Roboshop-Automation /home/centos/shell-scripting-Roboshop-Automation ; cd /home/centos/shell-scripting-Roboshop-Automation; sudo sh web.sh"
 
 # Get running instance names excluding specific IP
 SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output text | grep -v "50.17.150.240")
@@ -39,8 +38,6 @@ do
     # Copy files to the remote server
     scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
     VALIDATE $? "COPYING DONE $name"
-
-    # SSH into the remote server and execute commands
-    ssh -i /home/centos/.ssh/id_rsa centos@$name "$remote_commands"
-    VALIDATE $? "EXECUTION DONE $name"
+    scp -i /home/centos/.ssh/id_rsa centos@$name:sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh
+    VALIDATE $? "Script Exceution"
 done
