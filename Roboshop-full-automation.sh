@@ -29,18 +29,11 @@ VALIDATE() {
     fi
 }
 
-# Check if the user is root
-if [ "$(id -u)" -eq 0 ]; then
-    echo -e "${GREEN}SUCCESS: You are a root user. Script execution will start.${RESET}"
-else 
-    echo -e "${RED}ERROR: You are not a root user. Please switch to the root user.${RESET}"
-    exit 1
-fi
-
 echo
 ssh centos@54.166.253.186 <<EOF
 scp -r /home/centos/shell-scripting-Roboshop-Automation centos@54.166.253.186:/home/centos/
 EOF
+VALIDATE $? "Copy done"
 
 # Get running instance names
 
