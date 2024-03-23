@@ -57,6 +57,7 @@ for i in $PUBLIC_IP; do
     echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCES${RESET}/n"
     sshpass -p DevOps321 ssh -i centos@${PUBLIC_IP}
     VALIDATE $? "Logged into ${PUBLIC_IP}"
+    ssh-copy-id centos@${PUBLIC_IP}
 done    
 
 
