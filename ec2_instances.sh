@@ -55,9 +55,9 @@ do
             --instance-type "$BIG_INSTANCES" \
             --security-group-ids "$SECURITY_GROUP_ID" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$name}]"\
-            --query 'Instances[0].PublicIpAddress' \
+            --query 'Instances[0].PrivateIpAddress' \
             --output text)
-        sleep 10    
+        #sleep 10    
         echo "Public IP of $name is: $INSTANCE"
     else
         echo -e "INSTANCE IS-->${name} SO INSTANCE TYPE IS t2.micro"
@@ -66,9 +66,9 @@ do
             --instance-type "$SMALL_INSTANCES" \
             --security-group-ids "$SECURITY_GROUP_ID" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$name}]" \
-            --query 'Instances[0].PublicIpAddress' \
+            --query 'Instances[0].PrivateIpAddress' \
             --output text)
-        sleep 10
+        #sleep 10
         echo "Public IP of $name is: $INSTANCE"
     fi
 done
