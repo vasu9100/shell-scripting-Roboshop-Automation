@@ -41,7 +41,7 @@ else
 fi
 echo
 TASK_STARTED "SSH KEY CREATION STARTED"
-if [ -f "/home/centos/.ssh/id_rsa.pub" ]
+if [ -f "/home/centos/id_rsa.pub" ]
 then
     echo -e "${RED}SSH PUBLIC KEY ALREADY EXISTED SO THIS $0 SCRIPT STOPPED CREATING NEW KEY"
 else
