@@ -56,5 +56,5 @@ for IP in $PUBLIC_IP; do
     sshpass -p DevOps321 ssh centos@$IP "hostname"
     VALIDATE $? "Logged into $IP"
     echo -e "${GREEN}Copying SSH public key to $IP ${RESET}\n"
-    sshpass -p DevOps321 ssh-copy-id -i /home/centos/id_rsa.pub centos@$IP
+    sshpass -p DevOps321 ssh-copy-id -i /home/centos/.ssh/id_rsa.pub centos@$IP
 done
