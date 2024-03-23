@@ -30,7 +30,7 @@ VALIDATE() {
 }
 
 echo
-ssh -i /home/centos/.ssh/id_rsa centos@54.166.253.186 
+scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@54.166.253.186:/home/centos/shell-scripting-Roboshop-Automation 
 VALIDATE $? "Log Done"
 
 # Get running instance names
