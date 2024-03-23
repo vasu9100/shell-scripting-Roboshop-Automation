@@ -53,11 +53,11 @@ fi
 TASK_STARTED "PUBLIC-IP GATHERING"
 PUBLIC_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
 
-for i in $PUBLIC_IP; do
+for i in "${PUBLIC_IP[@]}"; do
     echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCES${RESET}/n"
     sshpass -p DevOps321 ssh -i centos@${PUBLIC_IP}
     VALIDATE $? "Logged into ${PUBLIC_IP}"
-    ssh-copy-id centos@${PUBLIC_IP}
+    ssh-copy-id -i /home/centos/id_rsa.pub centos@${PUBLIC_IP}
 done    
 
 
