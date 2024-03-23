@@ -40,7 +40,7 @@ fi
 echo
 
 # Get running instance names
-SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].Tags[?Key==`Name`].Value' --output text)
+SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].[Tags[?Key==`Name`].Value, PublicIpAddress]' --output text)
 
 # Loop through each instance and execute the script
 for name in $SERVER_NAMES;
