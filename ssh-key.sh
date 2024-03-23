@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 # Script Name: install_mongodb.sh
 # Purpose: This script installs MongoDB for the Roboshop application.
 # Author: Gonepudi Srinivas
@@ -9,7 +8,6 @@
 # Define colors for better readability
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
 PINK='\033[1;35m'
 RESET='\033[0m'
 
@@ -41,8 +39,7 @@ else
 fi
 echo
 TASK_STARTED "SSH KEY CREATION STARTED"
-if [ -f "/home/centos/id_rsa.pub" ]
-then
+if [ -f "/home/centos/id_rsa.pub" ]; then
     echo -e "${RED}SSH PUBLIC KEY ALREADY EXISTED SO THIS $0 SCRIPT STOPPED CREATING NEW KEY"
 else
     echo -e "${GREEN}SSH KEY IS NOT THERE SO THIS $0 SCRIPT STARTED CREATING NEW KEY ${RESET}"
@@ -53,11 +50,10 @@ fi
 TASK_STARTED "PUBLIC-IP GATHERING"
 PUBLIC_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
 
-for i in "${PUBLIC_IP[@]}"; do
-    echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCES${RESET}/n"
-    sshpass -p DevOps321 ssh -i centos@${PUBLIC_IP}
-    VALIDATE $? "Logged into ${PUBLIC_IP}"
-    ssh-copy-id -i /home/centos/id_rsa.pub centos@${PUBLIC_IP}
-done    
-
-
+for IP in $PUBLIC_IP; do
+    echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCE: $IP ${RESET}\n"
+    sshpass -p DevOps321 ssh -i /home/centos/id_rsa centos@$IP "echo 'successfully logged in'"
+    VALIDATE $? "Logged into $IP"
+    echo -e "${GREEN}Copying SSH public key to $IP ${RESET}\n"
+    sshpass -p DevOps321 ssh-copy-id -i /home/centos/id_rsa.pub centos@$IP
+done
