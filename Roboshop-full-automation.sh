@@ -38,16 +38,9 @@ else
 fi
 
 echo
+ssh -i /home/centos/.ssh/id_rsa centos@18.232.85.224 <<EOF
+scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$ip:/home/centos/
+EOF
 
 # Get running instance names
-SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output text)
 
-# Loop through each instance and execute the script
-for name in $SERVER_NAMES;
-do
-    TASK_STARTED "Executing script on $name"
-    echo -e "${YELLOW}LOGGING: ${RESET}$name"
-    ssh -i /home/centos/id_rsa centos@$name <<EOF
-scp -i /home/centos/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$ip:/home/centos/
-EOF
-done
