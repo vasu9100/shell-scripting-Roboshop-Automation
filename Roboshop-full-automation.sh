@@ -38,8 +38,8 @@ else
 fi
 
 echo
-ssh centos@18.232.85.224 <<EOF
-scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@18.232.85.224:/home/centos/
+ssh centos@ 54.166.253.186 <<EOF
+scp -r /home/centos/shell-scripting-Roboshop-Automation centos@54.166.253.186:/home/centos/
 EOF
 
 # Get running instance names
