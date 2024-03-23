@@ -39,12 +39,13 @@ else
 fi
 echo
 TASK_STARTED "SSH KEY CREATION STARTED"
-if [ -f "/home/centos/id_rsa.pub" ]; then
+if [ -f "/home/centos/.ssh/id_rsa.pub" ]; then
     echo -e "${RED}SSH PUBLIC KEY ALREADY EXISTED SO THIS $0 SCRIPT STOPPED CREATING NEW KEY"
 else
     echo -e "${GREEN}SSH KEY IS NOT THERE SO THIS $0 SCRIPT STARTED CREATING NEW KEY ${RESET}"
     echo
-    ssh-keygen -t rsa -b 4096 -f /home/centos/id_rsa
+    mkdir -p /home/centos/.ssh
+    ssh-keygen -t rsa -b 4096 -f /home/centos/.ssh/id_rsa
     VALIDATE $? "SSH KEY GENERATION"
 fi
 TASK_STARTED "PUBLIC-IP GATHERING"
