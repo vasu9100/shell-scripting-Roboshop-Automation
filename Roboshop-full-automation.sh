@@ -11,6 +11,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 PINK='\033[0;35m'
 RESET='\033[0m'
+remote_commands="cp -r /home/centos/shell-scripting-Roboshop-Automation /home/centos/shell-scripting-Roboshop-Automation ; cd /home/centos/shell-scripting-Roboshop-Automation; sudo sh web.sh"
 
 # Function to print task start messages
 TASK_STARTED() {
@@ -36,7 +37,7 @@ for name in $SERVER_NAMES;
 do
     TASK_STARTED "Executing script on $name"
     echo -e "${YELLOW}LOGGING: ${RESET}$name"
-    scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/shell-scripting-Roboshop-Automation 
+    scp -i /home/centos/.ssh/id_rsa -o "RemoteCommand=$remote_commands" centos@$name
     VALIDATE $? "COPYING DONE $name" 
 done
 
