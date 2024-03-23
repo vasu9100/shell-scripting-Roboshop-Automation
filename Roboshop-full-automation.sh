@@ -29,9 +29,16 @@ VALIDATE() {
     fi
 }
 
-echo
-scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@54.166.253.186:/home/centos/shell-scripting-Roboshop-Automation 
-VALIDATE $? "Log Done"
+SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output json | jq '.[] | select(. != "50.17.150.240")' | tr -d '"')
+
+# Loop through each instance and execute the script
+for name in $SERVER_NAMES;
+do
+    TASK_STARTED "Executing script on $name"
+    echo -e "${YELLOW}LOGGING: ${RESET}$name"
+    scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/shell-scripting-Roboshop-Automation 
+    VALIDATE $? "COPYING DONE $name" 
+done
 
 # Get running instance names
 
