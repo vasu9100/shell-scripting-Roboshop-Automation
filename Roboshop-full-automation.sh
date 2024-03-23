@@ -39,7 +39,7 @@ fi
 
 echo
 ssh -i /home/centos/.ssh/id_rsa centos@18.232.85.224 <<EOF
-scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$ip:/home/centos/
+scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@18.232.85.224:/home/centos/
 EOF
 
 # Get running instance names
