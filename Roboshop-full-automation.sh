@@ -27,7 +27,7 @@ VALIDATE() {
 # Remote commands to be executed
 
 # Get running instance names excluding specific IP
-SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output text | grep -v "50.17.150.240")
+SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].PublicIpAddress' --output json | jq '.[] | select(. != "50.17.150.240")' | tr -d '"')
 
 # Loop through each instance and execute the script
 for name in $SERVER_NAMES;
@@ -38,6 +38,7 @@ do
     # Copy files to the remote server
     scp -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
     VALIDATE $? "COPYING DONE $name"
-    scp centos@$name:sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh
-    VALIDATE $? "Script Exceution"
+    scp centos@$name:sudo sh /home/centos/web.sh
+    VALIDATE $? "scripting DONE $name"
+    
 done
