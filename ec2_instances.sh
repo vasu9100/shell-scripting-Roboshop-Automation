@@ -17,6 +17,9 @@ SECURITY_GROUP_ID="sg-0eab7d3878626d44d"
 AMI="ami-0f3c7d07486cad139"
 SMALL_INSTANCES="t2.micro"
 BIG_INSTANCES="t3.small"
+HOSTED_ZONE_ID="Z08382393NBPVIFQUJM1I"
+TTL=1
+
 
 # Function to print task start messages
 TASK_STARTED() {
@@ -46,29 +49,52 @@ fi
 echo
 TASK_STARTED "EC2 INSTANCES STARTED CREATING"
 
-for name in "${SERVER_NAMES[@]}";
-do
+for name in "${SERVER_NAMES[@]}"; do
     if [ "$name" = "mysql" ] || [ "$name" = "mongo" ] || [ "$name" = "shipping" ]; then
-        echo -e "INSTANCE IS-->${name} SO INSTANCE TYPE IS t2.small"
+        echo -e "INSTANCE IS --> ${name} SO INSTANCE TYPE IS t2.small"
         INSTANCE=$(aws ec2 run-instances \
             --image-id "$AMI" \
             --instance-type "$BIG_INSTANCES" \
             --security-group-ids "$SECURITY_GROUP_ID" \
-            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$name}]"\
-            --query 'Instances[0].PrivateIpAddress' \
+            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$name}]" \
+            --query 'Instances[*].PrivateIpAddress' \
             --output text)
-        #sleep 10    
-        echo "Public IP of $name is: $INSTANCE"
+        echo "Private IP of $name is: $INSTANCE"
     else
-        echo -e "INSTANCE IS-->${name} SO INSTANCE TYPE IS t2.micro"
+        echo -e "INSTANCE IS --> ${name} SO INSTANCE TYPE IS t2.micro"
         INSTANCE=$(aws ec2 run-instances \
             --image-id "$AMI" \
             --instance-type "$SMALL_INSTANCES" \
             --security-group-ids "$SECURITY_GROUP_ID" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$name}]" \
-            --query 'Instances[0].PrivateIpAddress' \
+            --query 'Instances[*].PrivateIpAddress' \
             --output text)
-        #sleep 10
-        echo "Public IP of $name is: $INSTANCE"
+        echo "Private IP of $name is: $INSTANCE"
     fi
+
+    JSON_PAYLOAD=$(cat <<EOF
+{
+    "Changes": [
+        {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "$name.gonepudirobot.online",
+                "Type": "A",
+                "TTL": $TTL,
+                "ResourceRecords": [
+                    {
+                        "Value": "$INSTANCE"
+                    }
+                ]
+            }
+        }
+    ]
+}
+EOF
+)
+    # Execute the change-resource-record-sets command
+    aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch "$JSON_PAYLOAD"
+
+    echo -e "${YELLOW} ROUTE-NAME: $JSON_PAYLOAD ${RESET}"
 done
+
