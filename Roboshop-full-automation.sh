@@ -38,7 +38,7 @@ do
     # Copy files to the remote server
     scp -i /home/centos/.ssh/id_rsa -r /home/centos/shell-scripting-Roboshop-Automation centos@$name:/home/centos/
     VALIDATE $? "COPYING DONE $name"
-    scp -i /home/centos/.ssh/id_rsa centos@$name:"sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh"
+    ssh -i /home/centos/.ssh/id_rsa centos@$name:"sudo sh /home/centos/shell-scripting-Roboshop-Automation/web.sh"
     VALIDATE $? "scripting DONE $name"
     
 done
