@@ -52,7 +52,7 @@ PUBLIC_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].Pub
 
 for IP in $PUBLIC_IP; do
     echo -e "${GREEN}TRYING TO LOGIN TO EC2 INSTANCE: $IP ${RESET}\n"
-    sshpass -p DevOps321 ssh -i /home/centos/id_rsa centos@$IP "echo 'successfully logged in'"
+    sshpass -p DevOps321 ssh centos@$IP "hostname"
     VALIDATE $? "Logged into $IP"
     echo -e "${GREEN}Copying SSH public key to $IP ${RESET}\n"
     sshpass -p DevOps321 ssh-copy-id -i /home/centos/id_rsa.pub centos@$IP
