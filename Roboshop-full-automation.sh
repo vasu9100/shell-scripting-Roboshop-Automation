@@ -39,11 +39,14 @@ fi
 
 echo
 
+# Get running instance names
 SERVER_NAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].Tags[?Key==`Name`].Value' --output text)
 
-for name in "${SERVER_NAMES}";
+# Loop through each instance and execute the script
+for name in $SERVER_NAMES;
 do
-    echo -e "${YELLOW} LOGGING: ${RESET} $name"
+    TASK_STARTED "Executing script on $name"
+    echo -e "${YELLOW}LOGGING: ${RESET}$name"
     ssh -i /home/centos/id_rsa centos@$name './web.sh'
-    VALIDATE $? "LOGGED INTO : $name"
-done  
+    VALIDATE $? "LOGGED INTO: $name"
+done
